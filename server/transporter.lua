@@ -368,7 +368,7 @@ RegisterNetEvent('human_labs_raid:server:crafting:collect_transporter_driver_loo
     if active_transporters[net_id] == nil or active_transporters[net_id].driver_seat_looted then return end
     active_transporters[net_id].driver_seat_looted = true
 
-    local loot_pool = Config.transporter.loot.driver
+    local loot_pool = Config.transporter.loot.driver_robbing
     add_loot_items(source, loot_pool)
 end)
 RegisterNetEvent('human_labs_raid:server:crafting:collect_transporter_driver_loot', function(net_id)

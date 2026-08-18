@@ -434,6 +434,13 @@ Config.transporter = {
         trunk = true
     },
     loot = {
+        driver_robbing = {
+            {
+                item = Config.entry_attendant.permit_item,
+                amount = 1,
+                chance = 0.6
+            }
+        },
         driver = {
             {
                 item = Config.entry_attendant.permit_item,
