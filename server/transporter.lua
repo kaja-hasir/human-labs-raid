@@ -275,6 +275,29 @@ local function transporter_spawn_loop()
     end)
 end
 
+local function add_loot_items(to, loot_pool)
+    for _, collection in ipairs(loot_pool) do
+        local item = collection.item
+        local metadata = collection.metadata or {}
+        local amount = collection.amount
+        local custom_amount = collection.custom_amount
+        local chance = collection.chance
+
+        if item == nil then return end
+
+        if chance == nil or math.random() <= chance then
+            local actual_amount = 1
+            if type(custom_amount) == "function" then
+                actual_amount = custom_amount()
+            elseif amount ~= nil then
+                actual_amount = amount
+            end
+
+            Inventory:AddItem(to, item, actual_amount, metadata)
+        end
+    end
+end
+
 function MakeTransporterInteractableClient(client)
     for id, _ in pairs(active_transporters) do
         if id and active_transporters[id] then
@@ -324,6 +347,9 @@ RegisterNetEvent('human_labs_raid:server:transporter:spawn_response', function(v
         vehicle_net_id = vehicle_net_id,
         driver_net_id = driver_net_id,
         passenger_net_id = passenger_net_id,
+        driver_seat_looted = false,
+        passenger_seat_looted = false,
+        trunk_looted = false,
         reached_destination = false,
         unable_to_continue = false
     }
@@ -336,6 +362,35 @@ RegisterNetEvent('human_labs_raid:server:transporter:spawn_response_failed', fun
     remove_vehicle(vehicle_net_id)
 
     transporter_spawned_failed = true
+end)
+
+RegisterNetEvent('human_labs_raid:server:crafting:collect_transporter_driver_loot_robbing', function(net_id)
+    if active_transporters[net_id] == nil or active_transporters[net_id].driver_seat_looted then return end
+    active_transporters[net_id].driver_seat_looted = true
+
+    local loot_pool = Config.transporter.loot.driver
+    add_loot_items(source, loot_pool)
+end)
+RegisterNetEvent('human_labs_raid:server:crafting:collect_transporter_driver_loot', function(net_id)
+    if active_transporters[net_id] == nil or active_transporters[net_id].driver_seat_looted then return end
+    active_transporters[net_id].driver_seat_looted = true
+
+    local loot_pool = Config.transporter.loot.driver
+    add_loot_items(source, loot_pool)
+end)
+RegisterNetEvent('human_labs_raid:server:crafting:collect_transporter_passenger_loot', function(net_id)
+    if active_transporters[net_id] == nil or active_transporters[net_id].passenger_seat_looted then return end
+    active_transporters[net_id].passenger_seat_looted = true
+
+    local loot_pool = Config.transporter.loot.passenger
+    add_loot_items(source, loot_pool)
+end)
+RegisterNetEvent('human_labs_raid:server:crafting:collect_transporter_trunk_loot', function(net_id)
+    if active_transporters[net_id] == nil or active_transporters[net_id].trunk_looted then return end
+    active_transporters[net_id].trunk_looted = true
+
+    local loot_pool = Config.transporter.loot.trunk
+    add_loot_items(source, loot_pool)
 end)
 
 AddEventHandler('onResourceStart', function(resourceName)

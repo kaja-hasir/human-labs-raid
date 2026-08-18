@@ -1,42 +1,8 @@
 local number_of_gas_extractions = 0
 
-local function add_loot_items(to, loot_pool)
-    for _, collection in ipairs(loot_pool) do
-        local item = collection.item
-        local metadata = collection.metadata or {}
-        local amount = collection.amount
-        local custom_amount = collection.custom_amount
-        local chance = collection.chance
-
-        if item == nil then return end
-
-        if chance == nil or math.random() <= chance then
-            local actual_amount = 1
-            if type(custom_amount) == "function" then
-                actual_amount = custom_amount()
-            elseif amount ~= nil then
-                actual_amount = amount
-            end
-
-            Inventory:AddItem(to, item, actual_amount, metadata)
-        end
-    end
-end
-
-RegisterNetEvent('human_labs_raid:server:crafting:collect_transporter_driver_loot', function()
-    local loot_pool = Config.transporter.loot.driver
-    add_loot_items(source, loot_pool)
-end)
-RegisterNetEvent('human_labs_raid:server:crafting:collect_transporter_passenger_loot', function()
-    local loot_pool = Config.transporter.loot.passenger
-    add_loot_items(source, loot_pool)
-end)
-RegisterNetEvent('human_labs_raid:server:crafting:collect_transporter_trunk_loot', function()
-    local loot_pool = Config.transporter.loot.trunk
-    add_loot_items(source, loot_pool)
-end)
-
 RegisterNetEvent('human_labs_raid:server:crafting:collect_gas', function(purity)
+    if not PlayersInsideLab[source] then return end
+
     local item
     if math.floor(purity) >= 95 then
         item = Config.crafting.gas_items.perfect_quality
@@ -52,8 +18,9 @@ RegisterNetEvent('human_labs_raid:server:crafting:collect_gas', function(purity)
 end)
 
 RegisterNetEvent('human_labs_raid:server:crafting:collect_compressed_gas', function(quality)
-    local item
+    if not PlayersInsideLab[source] then return end
 
+    local item
     if quality == "perfect_quality" then
         item = Config.crafting.compressed_gas_items.perfect_quality
     elseif quality == "high_quality" then
@@ -68,6 +35,8 @@ RegisterNetEvent('human_labs_raid:server:crafting:collect_compressed_gas', funct
 end)
 
 RegisterNetEvent('human_labs_raid:server:crafting:collect_packaged_liquid', function(quality)
+    if not PlayersInsideLab[source] then return end
+
     local item
     if quality == "perfect_quality" then
         item = Config.crafting.packaged_gas_items.perfect_quality
@@ -117,6 +86,7 @@ RegisterNetEvent('human_labs_raid:server:crafting:package_check', function(data,
 end)
 
 RegisterNetEvent('human_labs_raid:server:crafting:crafting_cancelled', function(data)
+    if not PlayersInsideLab[source] then return end
     if not data or next(data) == nil then return end
 
     local item_required = data.item_required

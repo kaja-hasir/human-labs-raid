@@ -67,6 +67,8 @@ RegisterNetEvent('human_labs_raid:server:peds:spawn_response_failed', function(i
 end)
 
 RegisterNetEvent('human_labs_raid:server:peds:remove_ped_slowly', function(net_id)
+    if spawned_ped_net_ids[net_id] == nil then return end
+
     local ped = NetworkGetEntityFromNetworkId(net_id)
     RunForPlayersInside(function(src)
         TriggerClientEvent('human_labs_raid:client:blip:remove_blip', src, net_id)

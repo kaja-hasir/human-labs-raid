@@ -69,15 +69,12 @@ local function start_lab()
             local now = GetGameTimer()
             if now - last_inside_trigger < 500 then return end
             last_inside_trigger = now
-            local server_id = GetPlayerServerId(PlayerId())
-            TriggerServerEvent('human_labs_raid:server:zone:lab_enter', server_id)
+            TriggerServerEvent('human_labs_raid:server:zone:lab_enter')
         end,
         onExit = function()
             local player_ped = PlayerPedId()
             Entity(player_ped).state.is_in_lab_zone = false
-
-            local server_id = GetPlayerServerId(PlayerId())
-            TriggerServerEvent('human_labs_raid:server:zone:lab_exit', server_id)
+            TriggerServerEvent('human_labs_raid:server:zone:lab_exit')
         end
     })
 end

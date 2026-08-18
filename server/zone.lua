@@ -78,13 +78,13 @@ RegisterNetEvent('human_labs_raid:server:zone:perimeter_exit', function()
     TriggerClientEvent('human_labs_raid:client:suspicious:inform_perimeter_zone', source, false)
 end)
 
-RegisterNetEvent('human_labs_raid:server:zone:lab_enter', function(src)
-    PlayersInsideLab[src] = true
-    TriggerClientEvent('human_labs_raid:client:suspicious:inform_suspicious_lab', src, true, Locale.suspicion.in_lab)
+RegisterNetEvent('human_labs_raid:server:zone:lab_enter', function()
+    PlayersInsideLab[source] = true
+    TriggerClientEvent('human_labs_raid:client:suspicious:inform_suspicious_lab', source, true, Locale.suspicion.in_lab)
 end)
-RegisterNetEvent('human_labs_raid:server:zone:lab_exit', function(src)
-    PlayersInsideLab[src] = nil
-    TriggerClientEvent('human_labs_raid:client:suspicious:inform_suspicious_lab', src, false, "")
+RegisterNetEvent('human_labs_raid:server:zone:lab_exit', function()
+    PlayersInsideLab[source] = nil
+    TriggerClientEvent('human_labs_raid:client:suspicious:inform_suspicious_lab', source, false, "")
 end)
 
 AddEventHandler('playerDropped', function()

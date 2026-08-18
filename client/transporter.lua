@@ -181,7 +181,7 @@ local function inform_about_robbing_if_peds_alive(vehicle_net_id, ped1, ped2)
     end
 end
 
-local function run_robbing(vehicle, driver, passenger)
+local function run_robbing(vehicle, vehicle_net_id, driver, passenger)
     local player_ped = PlayerPedId()
     local anim_dict = 'weapons@pistol@'
     local anim = 'grip'
@@ -215,7 +215,7 @@ local function run_robbing(vehicle, driver, passenger)
     local success = Notify:progressBar(Config.transporter.delivery_cars.rob_time, Locale.transporter.robbing_transporter, false, false)
     if not success then return end
 
-    TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_driver_loot')
+    TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_driver_loot_robbing', vehicle_net_id)
 
     if DoesEntityExist(driver) and IsPedInVehicle(driver, vehicle, false) then
         ClearPedTasks(driver)
@@ -232,7 +232,7 @@ local function run_robbing(vehicle, driver, passenger)
     TaskReactAndFleePed(driver, player_ped)
     TaskReactAndFleePed(passenger, player_ped)
 end
-local function search_driver_seat(vehicle)
+local function search_driver_seat(vehicle, vehicle_net_id)
     local player_ped = PlayerPedId()
     local anim_dict = 'anim@heists@prison_heiststation@cop_reactions'
     local anim = 'cop_b_idle'
@@ -250,11 +250,11 @@ local function search_driver_seat(vehicle)
     if not success then return end
 
     Entity(vehicle).state.driver_searched = true
-    TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_driver_loot')
+    TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_driver_loot', vehicle_net_id)
     Wait(200)
     TaskLeaveVehicle(player_ped, vehicle, 0)
 end
-local function search_passanger_seat(vehicle)
+local function search_passanger_seat(vehicle, vehicle_net_id)
     local player_ped = PlayerPedId()
     local anim_dict = 'mini@repair'
     local anim = 'fixing_a_ped'
@@ -272,11 +272,11 @@ local function search_passanger_seat(vehicle)
     if not success then return end
 
     Entity(vehicle).state.passenger_searched = true
-    TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_passenger_loot')
+    TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_passenger_loot', vehicle_net_id)
     Wait(200)
     TaskLeaveVehicle(player_ped, vehicle, 0)
 end
-local function search_trunk(vehicle)
+local function search_trunk(vehicle, vehicle_net_id)
     local player_ped = PlayerPedId()
     local anim_dict = 'mini@repair'
     local anim = 'fixing_a_ped'
@@ -306,7 +306,7 @@ local function search_trunk(vehicle)
     if not success then return end
 
     Entity(vehicle).state.trunk_searched = true
-    TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_trunk_loot')
+    TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_trunk_loot', vehicle_net_id)
     Wait(200)
 end
 
@@ -342,7 +342,7 @@ RegisterNetEvent('human_labs_raid:client:transporter:make_interactable', functio
                     inform_about_robbing_if_peds_alive(vehicle_net_id, driver, passenger)
                     informed_about_robbing = true
                 end)
-                run_robbing(vehicle, driver, passenger)
+                run_robbing(vehicle, vehicle_net_id, driver, passenger)
             end
         },{
             name = 'search_transporter_driver_door',
@@ -358,7 +358,7 @@ RegisterNetEvent('human_labs_raid:client:transporter:make_interactable', functio
                     inform_about_robbing_if_peds_alive(vehicle_net_id, driver, passenger)
                     informed_about_robbing = true
                 end)
-                search_driver_seat(vehicle)
+                search_driver_seat(vehicle, vehicle_net_id)
             end
         },{
             name = 'search_transporter_passenger_door',
@@ -374,7 +374,7 @@ RegisterNetEvent('human_labs_raid:client:transporter:make_interactable', functio
                     inform_about_robbing_if_peds_alive(vehicle_net_id, driver, passenger)
                     informed_about_robbing = true
                 end)
-                search_passanger_seat(vehicle)
+                search_passanger_seat(vehicle, vehicle_net_id)
             end
         },{
             name = 'search_transporter_trunk',
@@ -390,7 +390,7 @@ RegisterNetEvent('human_labs_raid:client:transporter:make_interactable', functio
                     inform_about_robbing_if_peds_alive(vehicle_net_id, driver, passenger)
                     informed_about_robbing = true
                 end)
-                search_trunk(vehicle)
+                search_trunk(vehicle, vehicle_net_id)
             end
         }
     })
