@@ -1,0 +1,96 @@
+#stabilize_game {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+#stabilize_image_container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    overflow: hidden;
+    transform: translate(-50%, -50%);
+}
+
+#stabilize_panel_img,
+#stabilize_piston_top_img,
+#stabilize_piston_bottom_img,
+#stabilize_valve_open_img,
+#stabilize_valve_closed_img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+}
+
+#stabilize_piston_hitbox {
+    position: absolute;
+    top: 10%;
+    left: 40%;
+    width: 25%;
+    height: 80%;
+    z-index: 2;
+}
+
+
+#stabilize_valve_hitbox {
+    position: absolute;
+    top: 38%;
+    left: 10%;
+    width: 20%;
+    height: 20%;
+    z-index: 2;
+}
+
+.stabilize_panel {
+    position: absolute;
+    padding: 8px;
+    width: 10%;
+    height: 21%;
+    top: 35%;
+    left: 24.3%;
+}
+
+#stabilize_chart-canvas {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#stabilize_tank-canvas {
+    position: absolute;
+    top: 113.8%;
+    left: 49.6%;
+    width: 4.8%;
+    height: 9.7%;
+    border-radius: 5px;
+    transform: rotate(358deg);
+}
+
+#stabilize_bubble-canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+#stabilize_smoke-canvas {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+#stabilize_smoke-pos {
+    position: absolute;
+    width: 1%;
+    height: 1%;
+}

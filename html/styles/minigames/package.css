@@ -1,0 +1,118 @@
+#package_game {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+#package_image_container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#flask_liquid_canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#droplet_canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+#flask_fillable,
+.bottle_fillable_liquid_bottom,
+.bottle_fillable_liquid_top,
+.bottle_fillable_hollow,
+.bottle_fillable_solid,
+.bottle_fillable_cap {
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+}
+
+#flask_fillable {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+#bottles_container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    height: 100%;
+    padding-left: 15%;
+    box-sizing: border-box;
+}
+
+.bottle {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    width: 23vw;
+    max-height: 50%;
+    aspect-ratio: 1 / 1;
+    top: 50%;
+    margin-right: -10%;
+    margin-bottom: -10%;
+}
+
+.bottle_fillable_hollow {
+    z-index: 0;
+}
+
+.bottle_fillable_liquid_bottom {
+    z-index: 1;
+    opacity: 0.35;
+}
+
+.package_fillable_liquid_canvas {
+    position: absolute;
+    z-index: 2;
+}
+
+.bottle_fillable_liquid_top {
+    z-index: 3;
+    opacity: 0.35;
+}
+
+.bottle_fillable_solid {
+    z-index: 4;
+}
+
+.bottle_fillable_cap {
+    z-index: 5;
+}
+
+.bottle img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.bottle canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#package_liquid_canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}

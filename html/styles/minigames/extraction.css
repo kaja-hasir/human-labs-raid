@@ -1,0 +1,85 @@
+#extract_game {
+    position: absolute;
+    width: 100%;
+}
+
+#extract_panel_img,
+#extract_needle_img,
+#extract_valve_img {
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+#extract_panel_img {
+    position: inherit;
+    width: 100%;
+    height: auto;
+}
+
+#extract_needle_img {
+    position: fixed;
+    padding-top: 10%;
+    left: 48.9%;
+    width: 9%;
+    height: auto;
+    transform-origin: 48% 78%;
+}
+
+#extract_valve_img {
+    position: relative;
+    padding-top: 20%;
+    left: 32%;
+    width: 15%;
+    height: auto;
+    transform-origin: 50% 79%;
+    z-index: 2;
+}
+
+#extract_valve_img:active {
+    cursor: grabbing;
+}
+
+.extract_panel {
+    position: absolute;
+    padding: 8px;
+    width: 10%;
+    height: 21%;
+    top: 35%;
+    left: 24.3%;
+}
+
+#extract_chart-canvas {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#extract_tank-canvas {
+    position: absolute;
+    top: 113.8%;
+    left: 49.6%;
+    width: 4.8%;
+    height: 9.7%;
+    border-radius: 5px;
+    transform: rotate(358deg);
+}
+
+#extract_smoke-canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+#extract_smoke-pos {
+    position: absolute;
+    top: 97%;
+    left: 51%;
+    width: 1%;
+    height: 1%;
+    border-radius: 5px;
+    transform: rotate(358deg);
+}

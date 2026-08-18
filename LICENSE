@@ -1,0 +1,35 @@
+Custom License
+
+Copyright (c) 2026 kaja-hasir. All rights reserved
+
+1. Definitions
+1.1 "Software" means the contents of all subfolders (directories) of this repository, including all source code, assets, and files contained within them, in original or copied form.
+1.2 "Excluded Files" means the following files, which are NOT part of the Software and are not covered by this License: fxmanifest.lua, config.lua, locale.lua, and README.md, including any renamed, relocated, reorganized, or newly created files that serve the same configuration, localization, resource-manifest, or documentation purpose as the files listed above. Excluded Files may be freely created, edited, replaced, translated, or removed by anyone without restrictions and without affecting their rights under this License.
+1.3 "You" means the individual or entity exercising rights under this License.
+1.4 "Distribute" means to make the Software, in whole or in part, available to any third party by any means, including but not limited to uploading, sharing, publishing, re-hosting, or including it in another repository, archive, resource pack, or collection.
+1.5 "Modify" or "Modification" means to alter, adapt, translate, decompile, reverse-engineer, or create a derivative work from any part of the Software, including but not limited to changing, adding to, or removing any of its source code or assets. Editing Excluded Files does not constitute a Modification for purposes of this License.
+
+2. Grant of Rights
+Subject to the terms of this License, the Licensor grants You a worldwide, royalty-free, non-exclusive license to:
+2.1 Use the Software, without restriction, including on a private or public server operated for commercial purposes or profit; and
+2.2 Distribute unmodified, verbatim copies of the Software, in whole, provided that:
+    a) You retain this License file, unaltered, with every copy You Distribute;
+    b) You retain all copyright notices contained in the Software; and
+    c) You include the following credit, unaltered, in a location reasonably visible to recipients: "Kaja Hasir <3"
+
+3. Restrictions
+3.1 No Modified Distribution. You may not Distribute the Software, or any portion of it, in Modified form, whether seperately or as part of another work, repository, resource, archive, or collection. This includes, without limitation: Distributing a fork of the Software, Distributing the Software with any of its source files altered, and Distributing a new resource that incorporates Modified portions of the Software.
+3.2 No Sublicensing of Modification Rights. You may not grant any other party the right to Modify and Distribute the Software on Your behalf or under Your name.
+3.3 No Misrepresentation. You may not remove, obscure, or alter the credit required under Section 2.2 c), and You may not represent a Modified copy of the Software as the original or as being endorsed by the Licensor.
+3.4 Personal/Internal Modification Permitted. Nothing in this License prevents You from Modifying the Software for Your own personal or internal use on servers You control. The restriction in Section 3.1 applies only to Distribution of Modified copies to third parties.
+
+4. Termination
+Any breach of this License automatically terminates Your rights under this License. Rights may be reinstated only by the express written permission of the Licensor.
+
+5. No Warranty
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+6. Miscellaneous
+6.1 If any provision of this License is held unenforceable, the remaining provisions remain in full effect.
+6.2 This License does not grant You any rights to the Licensor's trademarks, resource name, or branding beyond the credit required in Section 2.2 c).
+6.3 The Licensor may release future versions of the Software under different license terms. This does not affect the terms under which previously released versions were licensed.
