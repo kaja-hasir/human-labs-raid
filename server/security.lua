@@ -40,7 +40,7 @@ local function spawn_loop()
         while Hostile do
             if PedCount() <= max_combat_peds and #PlayersInsideLab > 0 then
                 spawn_raider()
-                Wait(Config.security.spawn_rate_on_alarm(#PlayersInsideLab) + math.random(0, 5000))
+                Wait(Config.security.spawn_rate_on_alarm(#PlayersInside) + math.random(0, 5000))
             else
                 Wait(1000)
             end
