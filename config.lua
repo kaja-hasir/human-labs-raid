@@ -8,7 +8,7 @@ Config.debug = false
 Config.language = 'de' -- Supports: 'de', 'en'
 
 Config.clear_population_every_frame = true -- Remove if all peds are cleared either way to save performance
-Config.raid_reentry_cooldown = 60*1000 -- 1 hour cooldown after raid end
+Config.raid_reentry_cooldown = 60*60*1000 -- 1 hour cooldown after raid end
 Config.reconnect_location = vec4(2911.7893, 4320.9497, 50.2861, 286.2869) -- Position for reconnecting players; default is where transporters despawn near containers
 Config.general_loading_wait_time_ms = 100 -- Decrease (>30) makes more responsive; Increase (<5000) improves performance
 
@@ -148,18 +148,18 @@ Config.framework = {
 ----------- Triggers -----------
 Config.triggers = {
     on_raid_started = function(players, started_silent)
-        print("Human labs raid started")
+        -- print("Human labs raid started")
     end,
     on_raid_end = function(maximum_players_raiding, each_players_px41_amount_crafted, total_stolen_px41, total_time_raiding_ms, time_players_stood_silent_ms, time_after_alarm_trigger_ms, players_stayed_fully_silent, permit_was_used)
         -- Use total_stolen_px41 for leaderboards e.g.; or generally to inform police as a dispatch that the raid is done
         -- If players are still in the territory but dead or knocked down, this will NOT be seen as ending the raid
-        print("Human labs raid performed by " .. tostring(maximum_players_raiding) .. " players, who stole " .. tostring(total_stolen_px41) .. " PX41")
+        -- print("Human labs raid performed by " .. tostring(maximum_players_raiding) .. " players, who stole " .. tostring(total_stolen_px41) .. " PX41")
     end,
     on_security_alarm_trigger = function(players_inside, number_of_players)
-        print("Human labs security alarm was triggered with " .. tostring(number_of_players) .. " suspects")
+        -- print("Human labs security alarm was triggered with " .. tostring(number_of_players) .. " suspects")
     end,
     on_transporter_robbing = function(player, fivem_player_name, vehicle, vehicle_location)
-        print("Transporter being robbed by " .. tostring(fivem_player_name))
+        -- print("Transporter being robbed by " .. tostring(fivem_player_name))
     end,
 
     --- Fine grain triggers
@@ -236,7 +236,7 @@ Config.security = {
         -- return false
         return false
     end,
-    max_combat_peds = 25, -- Will spawn initial combat peds either way, but limits infinitely spawning ones
+    max_combat_peds = 30, -- Will spawn initial combat peds either way, but limits infinitely spawning ones
     spawn_rate_on_alarm = 20000.0,
     ped_model = 's_m_m_armoured_01',
     accuracy = 30, -- 0-100
@@ -279,12 +279,17 @@ Config.security = {
         -- vec4(3597.5171, 3640.0771, 40.3404, 55.4422), -- Other side of garage
         vec4(3577.9277, 3816.2603, 30.4243, 169.0180), -- On the way to garage
     },
+
+    -- Must be in the same interior. Peds become invisible when spawned outside of garage and move through garage inside of building
     endless_spawn = {
-        vec4(3495.8123, 3742.9922, 35.6427, 171.3950), -- Near building 1
-        vec4(3526.3926, 3737.7278, 35.7308, 170.8449), -- Near building 2
-        vec4(3574.1965, 3736.4946, 35.6426, 170.4624), -- Near building 3
-        vec4(3579.9785, 3699.9695, 35.6428, 325.9852), -- Near building 8
-    }
+        vec4(3599.9219, 3699.6885, 29.6894, 345.6970), -- Elevator near garage
+        vec4(3597.7456, 3696.4902, 28.8214, 147.9614), -- Elevator mid way
+        vec4(3561.5212, 3688.8611, 28.1217, 255.6342), -- Elevator inside left
+        vec4(3562.0088, 3691.8071, 28.1213, 255.1658), -- Elevator inside right
+        vec4(3540.0984, 3672.9707, 28.1211, 172.7576), -- Elevator at the end
+    },
+    min_distance_for_endless_spawn = 10.0, -- Roughly so peds don't spawn right in front of them suddenly
+    endless_spawn_running_target_location = vec3(3562.9551, 3673.4189, 28.1219)
 }
 Config.barricates = {
     model = 'prop_barrier_work06a',
@@ -414,7 +419,7 @@ Config.transporter = {
     -- Makes the lab permit acquirable
     enabled = true,
     delivery_cars = {
-        frequency_driving_in_sec = 60*1000, -- 15 Minutes
+        frequency_driving_in_sec = 15*60*1000, -- 15 Minutes
         convoy_size = 3,
         vehicle = 'boxville3',
         ped_models = {

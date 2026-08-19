@@ -25,8 +25,8 @@ local function spawn_combat_peds()
     end
 end
 
-local function spawn_raider(location)
-    local raider_net_id = PlacePed('human_labs_raid:client:security:spawn_raider', location)
+local function spawn_raider()
+    local raider_net_id = PlacePed('human_labs_raid:client:security:spawn_raider', PlayersInside())
     GivePedBlip(raider_net_id, PedTypeForBlip.CombatRaiding)
 end
 
@@ -35,13 +35,11 @@ local function spawn_loop()
     raider_spawn_loop_active = true
 
     CreateThread(function()
-        local spawn_locations = Config.security.endless_spawn
         local max_combat_peds = Config.security.max_combat_peds
 
         while Hostile do
             if PedCount() <= max_combat_peds then
-                local location = spawn_locations[math.random(#spawn_locations)]
-                spawn_raider(location)
+                spawn_raider()
                 Wait(Config.security.spawn_rate_on_alarm + math.random(0, 5000))
             else
                 Wait(1000)

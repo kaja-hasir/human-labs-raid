@@ -112,6 +112,31 @@ local function make_scientist_patrolling(ped, net_id, all_players)
     end)
 end
 
+local function ideal_raider_spawn_location(players_inside)
+    local min_dist = Config.security.min_distance_for_endless_spawn
+    local valid_locations = {}
+    for _, loc_vec4 in ipairs(Config.security.endless_spawn) do
+        local loc_vec3 = vec3(loc_vec4.x, loc_vec4.y, loc_vec4.z)
+        local distance = 10000.0
+        for src, _ in pairs(players_inside) do
+            if NetworkDoesNetworkIdExist(src) then
+                local ped = NetworkGetEntityFromNetworkId(src)
+                if ped and ped ~= 0 then
+                    local coords = GetEntityCoords(ped)
+                    local diff = #(loc_vec3 - coords)
+                    if diff < distance then
+                        distance = diff
+                    end
+                end
+            end
+        end
+        if distance > min_dist then
+            valid_locations[#valid_locations + 1] = loc_vec4
+        end
+    end
+    return valid_locations[math.random(#valid_locations)]
+end
+
 local function place_combat_ped(location, model_hash)
     local ped, net_id = PlacePed(location, model_hash)
     if ped == nil then return end
@@ -179,7 +204,7 @@ local function place_raider(location)
     SetPedCombatAttributes(ped, 0, false)
     SetPedCombatAttributes(ped, 13, true) -- aggressive
 
-    local lab_pos = Config.crafting.locations.gas_containers
+    local lab_pos = Config.security.endless_spawn_running_target_location
     TaskFollowNavMeshToCoord(ped, lab_pos.x, lab_pos.y, lab_pos.z, 3.0, -1, 1.0, 0, 0.0)
 
     return ped, net_id
@@ -241,8 +266,9 @@ end)
 RegisterNetEvent('human_labs_raid:client:security:spawn_guard_patrolling', function(id, spawn_loc)
     SpawnPedWithResponse(place_guard_patrolling, id, { spawn_loc })
 end)
-RegisterNetEvent('human_labs_raid:client:security:spawn_raider', function(id, spawn_loc)
-    SpawnPedWithResponse(place_raider, id, { spawn_loc })
+RegisterNetEvent('human_labs_raid:client:security:spawn_raider', function(id, players_inside)
+    local spawn_location = ideal_raider_spawn_location(players_inside)
+    SpawnPedWithResponse(place_raider, id, { spawn_location })
 end)
 
 RegisterNetEvent('human_labs_raid:client:security:set_area_hostile', function()
