@@ -237,7 +237,6 @@ Config.security = {
         return false
     end,
     max_combat_peds = 30, -- Will spawn initial combat peds either way, but limits infinitely spawning ones
-    spawn_rate_on_alarm = 20000.0,
     ped_model = 's_m_m_armoured_01',
     accuracy = 30, -- 0-100
     weapon = 'WEAPON_PISTOL',
@@ -289,6 +288,15 @@ Config.security = {
         vec4(3540.0984, 3672.9707, 28.1211, 172.7576), -- Elevator at the end
     },
     min_distance_for_endless_spawn = 10.0, -- Roughly so peds don't spawn right in front of them suddenly
+    spawn_rate_on_alarm = function(number_of_players)
+        if number_of_players >= 5 then
+            return 6000.0
+        elseif number_of_players >= 3 then
+            return 11000.0
+        else
+            return 18000.0
+        end
+    end,
     endless_spawn_running_target_location = vec3(3562.9551, 3673.4189, 28.1219)
 }
 Config.barricates = {

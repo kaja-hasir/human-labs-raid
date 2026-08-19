@@ -70,7 +70,6 @@ Configurations are highly valuable to tweak and balance this raid. You can confi
 - On transporter task lost, still wait for no players to be around
 - Notification not through [ox] but see here [https://zsx-development.gitbook.io/docs/resources/user-interface-v2/exports/interfaces/default-notifications]
 - Per player cooldown, additionally to the global cooldown
-- Player based scaling
 - Job whitelist for who can raid
 
 ## License
