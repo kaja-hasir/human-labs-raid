@@ -1,5 +1,5 @@
 # Human Labs Raid
-Human labs is a place where players can enter a secured parameter and gather blue liquid named `PX41` at a lab inside the building. The players either force their way through and face a horde of enemies or do it (RP friendly) in stealth. Being stealthy requires a `labpermit` to enter the perimeter and inside the building, scientists must be avoided. Both ways lead to the human labs laboratory in which players can perform 3 minigames and gather `PX41`
+The Human labs raid was designed to be the solution to illegal nitro tuning. Instead of dealing with the nitro tuning itself, you deal with an item `PX41` that is used as the nitro fuel. Players can acquire it by performing the raid together and have fun during this event alongside.
 
 Trailer: [https://youtu.be/T853gK63evE](https://youtu.be/T853gK63evE)
 
