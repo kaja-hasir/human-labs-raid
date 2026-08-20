@@ -1,7 +1,7 @@
 # Human Labs Raid
 The Human labs raid was designed to be the solution to illegal nitro tuning. Instead of dealing with the nitro tuning itself, you deal with an item `PX41` that is used as the nitro fuel. Players can acquire it by performing the raid together and have fun during this event alongside.
 
-Trailer: [https://youtu.be/T853gK63evE](https://youtu.be/Hc6-at7gv7s)
+Trailer: [https://youtu.be/Hc6-at7gv7s](https://youtu.be/Hc6-at7gv7s)
 
 ## Gameplay
 Players can either approach the raid stealthy, loudly or choose both.
