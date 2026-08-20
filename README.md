@@ -74,3 +74,6 @@ Configurations are highly valuable to tweak and balance this raid. You can confi
 
 ## License
 Beware of the custom license that applies. Use is unrestricted, including commercially, but forking or distributing modified versions is prohibited; see the LICENSE file for the full terms.
+
+## Talk To Me
+[https://discord.gg/zrU33JW8Sw](Discord) (Server is purely for notifications designed
