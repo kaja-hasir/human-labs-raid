@@ -7,6 +7,11 @@ Config.debug = false
 
 Config.language = 'de' -- Supports: 'de', 'en'
 
+-- ONLY httpRequest in script to send version and server id (telemetry.lua)
+-- I use it to get the server count who use this skript, language, version:
+-- "x Servers use and love the script - Release more updates!"
+Config.support_the_creator_telemetry = true
+
 Config.clear_population_every_frame = true -- Remove if all peds are cleared either way to save performance
 Config.raid_reentry_cooldown = 60*60*1000 -- 1 hour cooldown after raid end
 Config.reconnect_location = vec4(2911.7893, 4320.9497, 50.2861, 286.2869) -- Position for reconnecting players; default is where transporters despawn near containers
