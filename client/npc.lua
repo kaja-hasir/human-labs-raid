@@ -130,12 +130,12 @@ local function petting_cat(ped)
     ClearPedTasksImmediately(ped)
     ClearPedTasksImmediately(player_ped)
 
-    TaskStandStill(ped, 5000)
+    local petting_time = 4500
+    TaskStandStill(ped, petting_time)
     TaskTurnPedToFaceEntity(player_ped, ped, 500)
     Wait(700)
-    TaskStartScenarioInPlace(player_ped, "CODE_HUMAN_MEDIC_TEND_TO_DEAD", 0, true)
+    TaskStartScenarioInPlace(player_ped, "CODE_HUMAN_MEDIC_TEND_TO_DEAD", petting_time, true)
     Wait(400)
-    local petting_time = GetGameTimer() + 5000
 
     local player_coords = GetEntityCoords(player_ped)
     local forward = GetEntityForwardVector(player_ped)
@@ -144,7 +144,7 @@ local function petting_cat(ped)
         player_coords.y + forward.y * 0.7,
         player_coords.z
     )
-    TaskGoStraightToCoord(ped, target_coords.x, target_coords.y, target_coords.z, 1.0, -1, GetEntityHeading(player_ped), 0.1)
+    TaskGoStraightToCoord(ped, target_coords.x, target_coords.y, target_coords.z, 1.0, petting_time, GetEntityHeading(player_ped), 0.1)
 
     TaskTurnPedToFaceEntity(ped, player_ped, 1000)
     Wait(petting_time)
