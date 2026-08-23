@@ -22,6 +22,9 @@ class Suspicion {
         this._particles = [];
         this._transitionAlpha = 0;
 
+        this._vignetteEl = null;
+        this._vignetteVisible = false;
+
         this.suspicion_level = 0;
         this.suspicion_amount = 0;
         this.suspicion_titles = ['Undetected', 'Restricted Area', 'Suspicious Activity', 'Spotted', 'Alarmed'];
@@ -43,6 +46,7 @@ class Suspicion {
     show_panel() {
         if (this.panel_active) return;
         this._particles = this._createParticles();
+        this._createVignette();
         this.build_ui();
         this.panel_active = true;
     }
@@ -161,6 +165,46 @@ class Suspicion {
             });
         }
         return pts;
+    }
+
+    _createVignette() {
+        if (document.getElementById('susp-vignette')) {
+            this._vignetteEl = document.getElementById('susp-vignette');
+            return;
+        }
+
+        const vin = document.createElement('div');
+        vin.id = 'susp-vignette';
+
+        const edge = document.createElement('div');
+        edge.id = 'susp-vignette-edge';
+        vin.appendChild(edge);
+
+        const pulse = document.createElement('div');
+        pulse.id = 'susp-vignette-pulse';
+        vin.appendChild(pulse);
+
+        document.body.appendChild(vin);
+        this._vignetteEl = vin;
+    }
+
+    _updateVignette(cfg) {
+        const vin = document.getElementById('susp-vignette');
+        const edge = document.getElementById('susp-vignette-edge');
+        if (!vin || !edge) return;
+
+        const shouldShow = this.vignetta_effect && this.suspicion_level >= 2;
+        this._vignetteVisible = shouldShow;
+        vin.style.opacity = shouldShow ? '1' : '0';
+
+        const spread = 40 + cfg.ringCount * 25;
+        const blur = 120 + cfg.ringCount * 40;
+        edge.style.boxShadow = `inset 0 0 ${blur}px ${spread}px ${cfg.colorGlow}`;
+
+        const pulse = document.getElementById('susp-vignette-pulse');
+        if (pulse) {
+            pulse.style.background = `radial-gradient(circle at center, transparent 50%, ${cfg.color} 150%)`;
+        }
     }
 
     build_ui() {
@@ -311,6 +355,7 @@ class Suspicion {
         this._resizeCanvas();
         window.addEventListener('resize', () => this._resizeCanvas());
         this._updateBorderSvg(cfg);
+        this._updateVignette(cfg);
 
         this.animFrame = requestAnimationFrame(this.loop);
     }
@@ -411,6 +456,7 @@ class Suspicion {
         });
 
         this._updateBorderSvg(cfg);
+        this._updateVignette(cfg);
     }
 
     _updateText() {
@@ -452,8 +498,43 @@ class Suspicion {
         this._animateIcon(cfg);
         this._drawBackground(dt, cfg);
         this._drawIconRings(cfg);
+        this._animateVignette(cfg);
 
         this.animFrame = requestAnimationFrame(this.loop);
+    }
+
+    _animateVignette(cfg) {
+        if (!this._vignetteVisible) return;
+
+        const edge = document.getElementById('susp-vignette-edge');
+        const pulse = document.getElementById('susp-vignette-pulse');
+        if (!edge) return;
+
+        const breathe = (Math.sin(this._pulsePhase) + 1) / 2;
+        const baseSpread = 40 + cfg.ringCount * 25;
+        const baseBlur = 120 + cfg.ringCount * 40;
+        const spread = baseSpread + breathe * (12 + cfg.ringCount * 6);
+        const blur = baseBlur + breathe * (24 + cfg.ringCount * 10);
+        edge.style.boxShadow = `inset 0 0 ${blur.toFixed(0)}px ${spread.toFixed(0)}px ${cfg.colorGlow}`;
+
+        if (cfg.blinkRate > 0) {
+            const blink = (Math.sin(this._blinkPhase * Math.PI * 2) + 1) / 2;
+            edge.style.opacity = (0.55 + blink * 0.45).toFixed(2);
+        } else {
+            edge.style.opacity = '1';
+        }
+
+        if (!pulse) return;
+
+        if (cfg.shakeIcon) {
+            const flicker = Math.random() > 0.86 ? (0.12 + Math.random() * 0.16) : 0;
+            pulse.style.opacity = flicker.toFixed(2);
+        } else if (cfg.rotateIcon) {
+            const heartbeat = Math.max(0, Math.sin(this._pulsePhase * 2)) ** 6;
+            pulse.style.opacity = (heartbeat * 0.32).toFixed(2);
+        } else {
+            pulse.style.opacity = '0';
+        }
     }
 
     _animateIcon(cfg) {
@@ -608,6 +689,10 @@ class Suspicion {
         if (this.animFrame) cancelAnimationFrame(this.animFrame);
         const panel = document.getElementById('suspicion_panel');
         if (panel) panel.remove();
+
+        if (this._vignetteEl) this._vignetteEl.remove();
+        const vin = document.getElementById('susp-vignette');
+        if (vin) vin.remove();
 
         try { window.removeEventListener('resize', () => this._resizeCanvas()); } catch (e) {}
 
