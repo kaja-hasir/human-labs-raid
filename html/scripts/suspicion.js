@@ -4,6 +4,13 @@ class Suspicion {
     }
 
     _constructor() {
+        this.position_left = "0px";
+        this.position_top = "0px";
+        this.position_scale = 1.0;
+        this.position_justify_h = "center";
+        this.position_justify_v = "top";
+        this.vignetta_effect = true;
+
         this.panel_active = false;
         this.loop = this.loop.bind(this);
         this.lastTS = null;
@@ -23,6 +30,14 @@ class Suspicion {
 
     init(data) {
         this.suspicion_titles = data.suspicion_titles ?? this.suspicion_titles;
+        this.vignetta_effect = data.vignetta_effect ?? this.vignetta_effect;
+        if (data.position) {
+            this.position_left = data.position.left ?? this.position_left;
+            this.position_top = data.position.top ?? this.position_top;
+            this.position_scale = data.position.scale ?? this.position_scale;
+            this.position_justify_h = data.position.justify_h ?? this.position_justify_h;
+            this.position_justify_v = data.position.justify_v ?? this.position_justify_v;
+        }
     }
 
     show_panel() {
@@ -155,8 +170,24 @@ class Suspicion {
         const panel = document.createElement('div');
         panel.id = 'suspicion_panel';
 
+        if (this.position_justify_v == "bottom") {
+            panel.style.top = "auto";
+            panel.style.bottom = "0px";
+        } else if (this.position_justify_v == "center") {
+            panel.style.top = "50%";
+        }
+        
+        if (this.position_justify_h == "right") {
+            panel.style.justifyContent = "right";
+        } else if (this.position_justify_h == "center") {
+            panel.style.justifyContent = "center";
+        }
+
         const wrap = document.createElement('div');
         wrap.id = 'susp-panel-wrap';
+        wrap.style.left = this.position_left;
+        wrap.style.top = this.position_top;
+        wrap.style.scale = this.position_scale;
 
         const inner = document.createElement('div');
         inner.id = 'susp-inner';
@@ -588,3 +619,24 @@ class Suspicion {
         this.panel_active = false;
     }
 }
+
+// // dev
+// let suspicion_dev = new Suspicion();
+// suspicion_dev.init({
+//     suspicion_titles: [
+//         "suspicion_title_0",
+//         "suspicion_title_1",
+//         "suspicion_title_2",
+//         "suspicion_title_3",
+//         "suspicion_title_4"
+//     ],
+//     vignette_effect: true,
+//     position: {
+//         left: "0.0px",
+//         top: "0.0px",
+//         scale: 1.0,
+//         justify_h: "left",
+//         justify_v: "bottom"
+//     }
+// })
+// suspicion_dev.show_panel();

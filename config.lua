@@ -53,6 +53,16 @@ Config.outfits = {
         components = { [1] = { texture = 0, drawable = 0, palette = 0 }, [3] = { texture = 0, drawable = 4, palette = 0 }, [4] = { texture = 8, drawable = 97, palette = 0 }, [5] = { texture = 0, drawable = 0, palette = 0 }, [6] = { texture = 0, drawable = 70, palette = 0 }, [7] = { texture = 0, drawable = 0, palette = 0 }, [8] = { texture = 0, drawable = 15, palette = 0 }, [9] = { texture = 0, drawable = 0, palette = 0 }, [10] = { texture = 0, drawable = 0, palette = 0 }, [11] = { texture = 0, drawable = 342, palette = 0 } }, props = { [0] = { texture = -1, drawable = -1 }, [1] = { texture = -1, drawable = -1 }, [2] = { texture = -1, drawable = -1 }, [6] = { texture = -1, drawable = -1 }, [7] = { texture = -1, drawable = -1 } }
     }
 }
+Config.suspicion_panel = {
+    vignette_effect = true,
+    position = {
+        left = "0.0px", -- css
+        top = "0.0px", -- css
+        scale = 1.0, -- test on multiple screens after changing
+        justify_h = "center", -- left, center, right
+        justify_v = "top", -- top, center, bottom
+    }
+}
 Config.zones = {
     global_zone_coords = vec3(3526.6445, 3721.6362, 36.6426),
     global_zone_radius = 400.0,

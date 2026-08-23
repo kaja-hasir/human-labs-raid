@@ -10,7 +10,7 @@
     font-family: 'Courier New', Courier, monospace;
     box-sizing: border-box;
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
 }
 
 #suspicion_panel * {

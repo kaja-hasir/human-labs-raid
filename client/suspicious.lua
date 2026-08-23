@@ -191,7 +191,9 @@ local function setup_panel()
                 Locale.suspicion.suspicion_title_2,
                 Locale.suspicion.suspicion_title_3,
                 Locale.suspicion.suspicion_title_4
-            }
+            },
+            vignetta_effect = Config.suspicion_panel.vignette_effect,
+            position = Config.suspicion_panel.position
         }
     })
 end
