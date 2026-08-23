@@ -101,7 +101,7 @@ class Suspicion {
                 label: 'Suspicious Activity',
                 color: 'rgba(255,140,26,1)',
                 colorDim: 'rgba(122,58,0,1)',
-                colorGlow: 'rgba(255,140,26,0.22)',
+                colorGlow: 'rgba(255,140,26,0.46)',
                 bgColor: 'rgba(18,6,0,0.90)',
                 borderColor: 'rgba(255,140,26,0.48)',
                 icon: '◉',
@@ -135,14 +135,14 @@ class Suspicion {
                 label: 'Full Alarm',
                 color: 'rgba(255,26,26,1)',
                 colorDim: 'rgba(106,0,0,1)',
-                colorGlow: 'rgba(255,26,26,0.35)',
+                colorGlow: 'rgba(255,26,26,0.05)',
                 bgColor: 'rgba(26,0,0,0.96)',
                 borderColor: 'rgba(255,26,26,0.75)',
                 icon: '☢',
                 barCount: 4,
                 scanSpeed: 1.4,
                 ringCount: 4,
-                pulseSpeed: 5.0,
+                pulseSpeed: 0.5,
                 iconScale: 1.3,
                 blinkRate: 0,
                 rotateIcon: true,
@@ -527,8 +527,9 @@ class Suspicion {
         if (!pulse) return;
 
         if (cfg.shakeIcon) {
-            const flicker = Math.random() > 0.86 ? (0.12 + Math.random() * 0.16) : 0;
-            pulse.style.opacity = flicker.toFixed(2);
+            // Uncomment for flicker effect of ones where shakeIcon is true
+            // const flicker = Math.random() > 0.86 ? (0.12 + Math.random() * 0.16) : 0;
+            // pulse.style.opacity = flicker.toFixed(2);
         } else if (cfg.rotateIcon) {
             const heartbeat = Math.max(0, Math.sin(this._pulsePhase * 2)) ** 6;
             pulse.style.opacity = (heartbeat * 0.32).toFixed(2);
