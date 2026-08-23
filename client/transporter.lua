@@ -332,7 +332,7 @@ RegisterNetEvent('human_labs_raid:client:transporter:make_interactable', functio
             name = 'rob_transporter',
             icon = 'fa-solid fa-gun',
             label = Locale.transporter.rob_driver,
-            distance = 1.0,
+            distance = Config.transporter.interaction_distance,
             canInteract = function() return can_rob(vehicle, driver) end,
             bones = { 'bonnet', 'door_dside_f', 'door_pside_f', 'wheel_lf', 'wheel_rf' },
             onSelect = function()
@@ -349,7 +349,7 @@ RegisterNetEvent('human_labs_raid:client:transporter:make_interactable', functio
             icon = 'fa-solid fa-magnifying-glass',
             label = Locale.transporter.search_transporter,
             canInteract = function() return can_search_driver_seat(vehicle, driver) end,
-            distance = 1.0,
+            distance = Config.transporter.interaction_distance,
             bones = { 'door_dside_f' },
             onSelect = function()
                 CreateThread(function()
@@ -365,7 +365,7 @@ RegisterNetEvent('human_labs_raid:client:transporter:make_interactable', functio
             icon = 'fa-solid fa-magnifying-glass',
             label = Locale.transporter.search_transporter,
             canInteract = function() return can_search_passenger_seat(vehicle, driver) end,
-            distance = 1.0,
+            distance = Config.transporter.interaction_distance,
             bones = { 'door_pside_f' },
             onSelect = function()
                 CreateThread(function()
@@ -381,7 +381,7 @@ RegisterNetEvent('human_labs_raid:client:transporter:make_interactable', functio
             icon = 'fa-solid fa-magnifying-glass',
             label = Locale.transporter.search_transporter,
             canInteract = function() return can_search_trunk(vehicle, driver) end,
-            distance = 1.0,
+            distance = Config.transporter.interaction_distance,
             bones = { 'door_dside_r', 'door_pside_r' },
             onSelect = function()
                 CreateThread(function()

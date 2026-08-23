@@ -455,6 +455,7 @@ Config.transporter = {
         route_start = vec4(3476.3318, 3665.8723, 33.5051, 10.0),
         route_destination = vec4(2889.8984, 4378.2915, 49.8966, 293.8768)
     },
+    interaction_distance = 1.5, -- 1.0 is lowest I would setup
     robbing_enabled = true,
     searching_enabled = {
         driver_seat = true,
