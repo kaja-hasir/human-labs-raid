@@ -1,3 +1,7 @@
+html, body {
+    overflow: hidden;
+}
+
 #extract_game {
     position: absolute;
     width: 100%;
