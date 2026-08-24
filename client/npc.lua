@@ -147,7 +147,39 @@ local function petting_cat(ped)
     TaskGoStraightToCoord(ped, target_coords.x, target_coords.y, target_coords.z, 1.0, petting_time, GetEntityHeading(player_ped), 0.1)
 
     TaskTurnPedToFaceEntity(ped, player_ped, 1000)
-    Wait(petting_time)
+    Wait(petting_time - 10*36*2*3)
+
+    FreezeEntityPosition(ped, true)
+    local coords = GetEntityCoords(ped)
+    local heading = GetEntityHeading(ped)
+    local offset_z = 0.1
+
+    local counter = 0
+    while counter <= 36*2*3 do
+        if counter <= 36*2 then
+            heading = (heading + 20) % 360
+        elseif counter <= 36*2*2 then
+            heading = (heading + 350) % 360
+        else
+            heading = (heading + 30) % 360
+        end
+        if counter > 36*2 and counter <= 36*2*2 and counter % 36*2 <= 36 then
+            offset_z = offset_z + 0.01
+        elseif counter > 36*2 and counter <= 36*2*2 then
+            offset_z = offset_z - 0.01
+        elseif counter % 36 <= 18 then
+            offset_z = offset_z + 0.03
+        else
+            offset_z = offset_z - 0.03
+        end
+        SetEntityCoords(ped, coords.x, coords.y, coords.z + offset_z, true, false, false, false)
+        SetEntityHeading(ped, heading)
+        counter = counter + 1
+        Wait(10)
+    end
+
+    SetEntityCoords(ped, coords.x, coords.y, coords.z, true, false, false, false)
+    FreezeEntityPosition(ped, false)
 
     ClearPedTasks(player_ped)
 
