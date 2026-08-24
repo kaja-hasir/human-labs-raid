@@ -173,7 +173,7 @@ end)
 
 RegisterNetEvent('human_labs_raid:client:npc:permit_approved', function(ped)
     Notify:message(
-        Locale.npc.entry.permit_npc_name,
+        Locale.npc.entry.entry_attendant_name,
         Locale.npc.entry.approved_entry
     )
     local net_id = NetworkGetNetworkIdFromEntity(ped)
@@ -184,7 +184,7 @@ end)
 
 RegisterNetEvent('human_labs_raid:client:npc:permit_declined', function(ped)
     Notify:message(
-        Locale.npc.entry.permit_npc_name,
+        Locale.npc.entry.entry_attendant_name,
         Locale.npc.entry.declined_entry
     )
     local net_id = NetworkGetNetworkIdFromEntity(ped)
@@ -200,14 +200,14 @@ RegisterNetEvent('human_labs_raid:client:npc:make_entry_attendant_interactable',
     Target:addLocalEntity(ped, {
         {
             name = 'talk_to_entry_guard',
-            label = Locale.npc.entry.ask_npc,
+            label = Locale.npc.entry.entry_attendant_ask,
             icon = 'fa-solid fa-question',
             canInteract = function()
                 return not Hostile
             end,
             onSelect = function()
                 Notify:message(
-                    Locale.npc.entry.permit_npc_name,
+                    Locale.npc.entry.entry_attendant_name,
                     Locale.npc.entry.permit_explain
                 )
             end
@@ -225,6 +225,30 @@ RegisterNetEvent('human_labs_raid:client:npc:make_entry_attendant_interactable',
                 Wait(5000)
                 TriggerServerEvent('human_labs_raid:server:access:npc_permit_check', ped)
                 Entity(ped).state.checking_permit = false
+            end
+        }
+    })
+end)
+
+RegisterNetEvent('human_labs_raid:client:npc:make_waver_interactable', function(net_id)
+    if RepeatFunctionUntilTrueWithTimeout(NetworkDoesEntityExistWithNetworkId, { net_id }) then return end
+    if not NetworkDoesEntityExistWithNetworkId(net_id) then return end
+    local ped = NetworkGetEntityFromNetworkId(net_id)
+    if RepeatFunctionUntilTrueWithTimeout(DoesEntityExist, { ped }) then return end
+
+    Target:addLocalEntity(ped, {
+        {
+            name = 'talk_to_waver',
+            label = Locale.npc.entry.waver_ask,
+            icon = 'fa-solid fa-question',
+            canInteract = function()
+                return not Hostile
+            end,
+            onSelect = function()
+                Notify:message(
+                    Locale.npc.entry.waver_name,
+                    Locale.npc.entry.waver_talk
+                )
             end
         }
     })

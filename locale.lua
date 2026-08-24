@@ -3,8 +3,11 @@ Locale = {}
 if Config.language == 'de' then
     Locale.npc = {
         entry = {
-            ask_npc = "Frage nach einem Zugang",
-            permit_npc_name = "Human Labs Wächter",
+            waver_ask = "Guten Tag",
+            waver_talk = "Bitte bis zur Schranke vorfahren",
+            waver_name = "Human Labs Wächter",
+            entry_attendant_ask = "Frage nach einem Zugang",
+            entry_attendant_name = "Human Labs Wächter",
             permit_explain = "Wenn Sie eine Lieferung für Human Labs haben, bitte zeigen Sie ihren Zugang",
             show_permit = "Zeige Zugang",
             approved_entry = "Ihr Zugang ist gültig, Sie dürfen eintreten",
@@ -82,8 +85,11 @@ if Config.language == 'de' then
 else
     Locale.npc = {
         entry = {
-            ask_npc = "Ask guard about permits",
-            permit_npc_name = "Human Labs Guard",
+            waver_ask = "Good day",
+            waver_talk = "Please proceed to the barrier",
+            waver_name = "Human Labs Guard",
+            entry_attendant_ask = "Ask guard about permits",
+            entry_attendant_name = "Human Labs Guard",
             permit_explain = "If you have a delivery for human labs, please show me your permit",
             show_permit = "Show permit",
             approved_entry = "The permit is valid, you are approved and can enter",

@@ -1,11 +1,13 @@
 local prohibited_lab_area_player_count = 0
 
+local waver_net_id = nil
 local entry_attendant_net_id = nil
 local smoking_scientist_net_id = nil
 local lab_entry_security_net_id = nil
 local cat_net_id = nil
 
 function MakeNpcInterableClient(client)
+    TriggerClientEvent('human_labs_raid:client:npc:make_waver_interactable', client, waver_net_id)
     TriggerClientEvent('human_labs_raid:client:npc:make_entry_attendant_interactable', client, entry_attendant_net_id)
     TriggerClientEvent('human_labs_raid:client:npc:make_ped_smoking_scientist_interactable', client, smoking_scientist_net_id)
     TriggerClientEvent('human_labs_raid:client:npc:make_cat_interactable', client, cat_net_id)
@@ -22,7 +24,12 @@ function SpawnEntryAttendant()
 end
 
 function SpawnWaver()
-    local _waver_net_id = PlacePed('human_labs_raid:client:npc:spawn_waver', nil)
+    waver_net_id = PlacePed('human_labs_raid:client:npc:spawn_waver', nil)
+    RunForPlayersInside(function(src)
+        if not RaidDisabled then
+            TriggerClientEvent('human_labs_raid:client:npc:make_waver_interactable', src, waver_net_id)
+        end
+    end)
 end
 
 function SpawnSmokingScientist()
