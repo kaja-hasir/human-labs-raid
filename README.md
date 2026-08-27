@@ -67,7 +67,6 @@ Configurations are highly valuable to tweak and balance this raid. You can confi
 1. The item 'labpermit' is required for a stealthy approach to this mission. The item is acquirable through transporters driving there. If the item should not be acquirable through those transportert, then inside `shared/config.lua` set `Config.transporter.enabled = false`
 
 ## Future Features
-- On transporter task lost, still wait for no players to be around
 - Notification not through [ox] but see here [https://zsx-development.gitbook.io/docs/resources/user-interface-v2/exports/interfaces/default-notifications]
 - Per player cooldown, additionally to the global cooldown
 - Job whitelist for who can raid

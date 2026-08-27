@@ -212,10 +212,10 @@ local function run_robbing(vehicle, vehicle_net_id, driver, passenger)
         TaskPlayAnim(player_ped, anim_dict, anim, 8.0, -8.0, Config.transporter.delivery_cars.rob_time, 49, 0.0, false, false, false)
     end
 
-    local success = Notify:progressBar(Config.transporter.delivery_cars.rob_time, Locale.transporter.robbing_transporter, false, false)
-    if not success then return end
-
-    TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_driver_loot_robbing', vehicle_net_id)
+    local success = Notify:progressBar(Config.transporter.delivery_cars.rob_time, Locale.transporter.robbing_transporter, true, false)
+    if success then
+        TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_driver_loot_robbing', vehicle_net_id)
+    end
 
     if DoesEntityExist(driver) and IsPedInVehicle(driver, vehicle, false) then
         ClearPedTasks(driver)
@@ -231,14 +231,18 @@ local function run_robbing(vehicle, vehicle_net_id, driver, passenger)
     FreezeEntityPosition(vehicle, false)
     TaskReactAndFleePed(driver, player_ped)
     TaskReactAndFleePed(passenger, player_ped)
+    ClearPedTasks(player_ped)
 end
 local function search_driver_seat(vehicle, vehicle_net_id)
     local player_ped = PlayerPedId()
     local anim_dict = 'anim@heists@prison_heiststation@cop_reactions'
     local anim = 'cop_b_idle'
 
-    TaskEnterVehicle(player_ped, vehicle, 20000, -1, 1.0, 8, 0)
-    if RepeatFunctionUntilTrueWithTimeout(IsPedInVehicle, { player_ped, vehicle, false }) then return end
+    TaskEnterVehicle(player_ped, vehicle, -1, -1, 1.0, 8, 0)
+    if RepeatFunctionUntilTrueWithTimeout(IsPedInVehicle, { player_ped, vehicle, false }) then
+        ClearPedTasks(player_ped)
+        return
+    end
 
     RequestAnimDict(anim_dict)
     if not RepeatFunctionUntilTrueWithTimeout(HasAnimDictLoaded, { anim_dict }) then
@@ -247,11 +251,13 @@ local function search_driver_seat(vehicle, vehicle_net_id)
     end
 
     local success = Notify:progressBar(Config.transporter.delivery_cars.search_time, Locale.transporter.searching_transporter, true, true)
-    if not success then return end
+    if success then
+        Entity(vehicle).state.driver_searched = true
+        TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_driver_loot', vehicle_net_id)
+        Wait(200)
+    end
 
-    Entity(vehicle).state.driver_searched = true
-    TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_driver_loot', vehicle_net_id)
-    Wait(200)
+    ClearPedTasks(player_ped)
     TaskLeaveVehicle(player_ped, vehicle, 0)
 end
 local function search_passanger_seat(vehicle, vehicle_net_id)
@@ -259,8 +265,11 @@ local function search_passanger_seat(vehicle, vehicle_net_id)
     local anim_dict = 'mini@repair'
     local anim = 'fixing_a_ped'
 
-    TaskEnterVehicle(player_ped, vehicle, 20000, 0, 1.0, 8, 0)
-    if RepeatFunctionUntilTrueWithTimeout(IsPedInVehicle, { player_ped, vehicle, false }) then return end
+    TaskEnterVehicle(player_ped, vehicle, -1, 0, 1.0, 8, 0)
+    if RepeatFunctionUntilTrueWithTimeout(IsPedInVehicle, { player_ped, vehicle, false }) then
+        ClearPedTasks(player_ped)
+        return
+    end
 
     RequestAnimDict(anim_dict)
     if not RepeatFunctionUntilTrueWithTimeout(HasAnimDictLoaded, { anim_dict }) then
@@ -269,11 +278,13 @@ local function search_passanger_seat(vehicle, vehicle_net_id)
     end
 
     local success = Notify:progressBar(Config.transporter.delivery_cars.search_time, Locale.transporter.searching_transporter, true, true)
-    if not success then return end
+    if success then
+        Entity(vehicle).state.passenger_searched = true
+        TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_passenger_loot', vehicle_net_id)
+        Wait(200)
+    end
 
-    Entity(vehicle).state.passenger_searched = true
-    TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_passenger_loot', vehicle_net_id)
-    Wait(200)
+    ClearPedTasks(player_ped)
     TaskLeaveVehicle(player_ped, vehicle, 0)
 end
 local function search_trunk(vehicle, vehicle_net_id)
@@ -281,18 +292,28 @@ local function search_trunk(vehicle, vehicle_net_id)
     local anim_dict = 'mini@repair'
     local anim = 'fixing_a_ped'
 
-    TaskEnterVehicle(player_ped, vehicle, 20000, 1, 1.0, 8, 0)
+    TaskEnterVehicle(player_ped, vehicle, -1, 1, 1.0, 8, 0)
     if RepeatFunctionUntilTrueWithTimeout(function()
         return GetVehicleDoorAngleRatio(vehicle, 2) > 0.6
-    end, {}) then return end
+    end, {}) then
+        ClearPedTasks(player_ped)
+        return
+    end
 
     ClearPedTasksImmediately(player_ped)
-    TaskEnterVehicle(player_ped, vehicle, 3000, 2, 1.0, 8, 0)
+    if IsPedInVehicle(player_ped, vehicle, false) then return end
+
+    TaskEnterVehicle(player_ped, vehicle, -1, 2, 1.0, 8, 0)
     if RepeatFunctionUntilTrueWithTimeout(function()
         return GetVehicleDoorAngleRatio(vehicle, 3) > 0.6
-    end, {}) then return end
+    end, {}) then
+        ClearPedTasks(player_ped)
+        return
+    end
 
     ClearPedTasksImmediately(player_ped)
+    if IsPedInVehicle(player_ped, vehicle, false) then return end
+
     TaskTurnPedToFaceEntity(player_ped, vehicle, Config.transporter.delivery_cars.search_time)
     Wait(300)
 
@@ -303,11 +324,12 @@ local function search_trunk(vehicle, vehicle_net_id)
     end
 
     local success = Notify:progressBar(Config.transporter.delivery_cars.search_time, Locale.transporter.searching_transporter, true, true)
-    if not success then return end
-
-    Entity(vehicle).state.trunk_searched = true
-    TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_trunk_loot', vehicle_net_id)
-    Wait(200)
+    if success then
+        Entity(vehicle).state.trunk_searched = true
+        TriggerServerEvent('human_labs_raid:server:crafting:collect_transporter_trunk_loot', vehicle_net_id)
+        Wait(200)
+    end
+    ClearPedTasks(player_ped)
 end
 
 RegisterNetEvent('human_labs_raid:client:transporter:make_interactable', function(vehicle_net_id, driver_net_id, passenger_net_id)
