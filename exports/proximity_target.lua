@@ -3,8 +3,16 @@
 ProximityTarget = {}
 
 local custom_zone = {}
-local distance_default_value = 2.0
+local interaction_loop_active = {}
 local progressing_zone_id = 0
+
+local KEYCODE_INTERACT = 38 -- E
+local KEYCODE_UP = 172 -- Arrow up
+local KEYCODE_DOWN = 173 -- Arrow down
+
+local DISTANCE_DEFAULT = 2.0
+local RAYCAST_BONE_DISTANCE = 1.0
+local raycasting = false
 
 local function get_next_id()
     progressing_zone_id = progressing_zone_id + 1
@@ -38,26 +46,104 @@ local function draw_text_3d(x, y, z, text, is_selected)
     end
 end
 
+local function interaction_loop(data, interactions, id)
+    if interaction_loop_active[id]
+    or IsControlPressed(0, KEYCODE_INTERACT)
+    or IsControlPressed(0, KEYCODE_UP)
+    or IsControlPressed(0, KEYCODE_DOWN) then
+        return
+    end
+
+    interaction_loop_active[id] = true
+
+    CreateThread(function()
+        local hovering_over_list_index = 1
+        while true do
+            Wait(0)
+
+            if not can_player_interact() then break end
+
+            local interaction_list = {}
+            for i, _ in ipairs(data) do
+                if interactions[i] ~= false then
+                    interaction_list[#interaction_list + 1] = interactions[i]
+                end
+            end
+
+            local interaction_list_size = #interaction_list
+            if interaction_list_size == 0 then break end
+
+            if hovering_over_list_index > interaction_list_size then
+                hovering_over_list_index = interaction_list_size
+            elseif hovering_over_list_index < 1 then
+                hovering_over_list_index = 1
+            end
+
+            if IsControlJustPressed(0, KEYCODE_UP) then
+                hovering_over_list_index = math.max(1, hovering_over_list_index - 1)
+            elseif IsControlJustPressed(0, KEYCODE_DOWN) then
+                hovering_over_list_index = math.min(interaction_list_size, hovering_over_list_index + 1)
+            end
+
+            for i, item in ipairs(interaction_list) do
+                local text_pos = item.text_pos
+                local is_selected = (i == hovering_over_list_index)
+                local text = item.option.label
+                if text == nil then text = "unknown" end
+                if is_selected then text = "> " .. item.option.label .. " <" end
+
+                local z_offset = 0.4 - ((i - 1) * 0.08)
+                draw_text_3d(text_pos.x, text_pos.y, text_pos.z + z_offset, text, is_selected)
+            end
+
+            -- BeginTextCommandDisplayHelp("STRING")
+            -- AddTextComponentSubstringPlayerName("Press ~INPUT_CONTEXT~ to interact")
+            -- EndTextCommandDisplayHelp(0, false, true, -1)
+
+            if IsControlJustPressed(0, KEYCODE_INTERACT) then
+                local selected_interaction = interaction_list[hovering_over_list_index]
+                if type(selected_interaction.option.onSelect) == "function" then
+                    selected_interaction.option.onSelect()
+                end
+                break
+            end
+        end
+        interaction_loop_active[id] = false
+    end)
+end
+
 local function get_maximum_raycast_length(data)
     local maximum_raycast_length = 0.0
     for _, option in ipairs(data) do
         local distance = option.distance
-        local bones = option.bones
-        if bones == nil then
-            if distance == nil then
-                maximum_raycast_length = distance_default_value
-            elseif distance > maximum_raycast_length then
-                maximum_raycast_length = distance
-            end
-        else
-            if distance == nil then
-                maximum_raycast_length = distance_default_value + 4.0 -- Temporary bone fix
-            elseif distance > maximum_raycast_length then
-                maximum_raycast_length = distance + 4.0 -- Temporary bone fix
-            end
+        if distance == nil then
+            maximum_raycast_length = DISTANCE_DEFAULT
+        elseif distance > maximum_raycast_length then
+            maximum_raycast_length = distance
         end
     end
     return maximum_raycast_length
+end
+
+local function get_maximum_bone_offset(entity, data)
+    local maximum_bone_offset = 0.0
+    local entity_coords = GetEntityCoords(entity)
+    for _, option in ipairs(data) do
+        local bones = option.bones
+        if bones ~= nil then
+            for _, bone_name in ipairs(bones) do
+                local bone_index = GetEntityBoneIndexByName(entity, bone_name)
+                if bone_index ~= -1 then
+                    local bone_coords = GetWorldPositionOfEntityBone(entity, bone_index)
+                    local diff = #(entity_coords - bone_coords)
+                    if diff > maximum_bone_offset then
+                        maximum_bone_offset = diff
+                    end
+                end
+            end
+        end
+    end
+    return maximum_bone_offset
 end
 
 local function throw_raycast(target_entity)
@@ -75,6 +161,8 @@ local function throw_raycast(target_entity)
     )
     local dest = start + direction * 15.0 -- Cast long ray and check later for distance
 
+    while raycasting do Wait(0) end
+    raycasting = true
     local ray = StartShapeTestLosProbe(
         start.x, start.y, start.z,
         dest.x, dest.y, dest.z,
@@ -85,6 +173,7 @@ local function throw_raycast(target_entity)
         retval, hit, hit_coords, _, entity_hit = GetShapeTestResult(ray) -- hit is integer not bool
         Wait(0)
     end
+    raycasting = false
 
     if hit == 1 and (target_entity == nil or entity_hit == target_entity) then
         return hit_coords
@@ -234,7 +323,6 @@ function ProximityTarget:addBoxZone(data)
     local zone_id = get_next_id()
     custom_zone[zone_id] = true
     local interactions = {}
-    local interaction_loop_active = false
 
     local maximum_raycast_length = get_maximum_raycast_length(data.options)
 
@@ -248,66 +336,6 @@ function ProximityTarget:addBoxZone(data)
         end)
     end
 
-    local function interaction_loop()
-        if interaction_loop_active then return end
-        interaction_loop_active = true
-
-        CreateThread(function()
-            local hovering_over_list_index = 1
-            while true do
-                Wait(0)
-
-                if not can_player_interact() then break end
-
-                local interaction_list = {}
-                for i, _ in ipairs(data.options) do
-                    if interactions[i] ~= false then
-                        interaction_list[#interaction_list + 1] = interactions[i]
-                    end
-                end
-
-                local interaction_list_size = #interaction_list
-                if interaction_list_size == 0 then break end
-
-                if hovering_over_list_index > interaction_list_size then
-                    hovering_over_list_index = interaction_list_size
-                elseif hovering_over_list_index < 1 then
-                    hovering_over_list_index = 1
-                end
-
-                if IsControlJustPressed(0, 172) then -- Arrow up
-                    hovering_over_list_index = math.max(1, hovering_over_list_index - 1)
-                elseif IsControlJustPressed(0, 173) then -- Arrow down
-                    hovering_over_list_index = math.min(interaction_list_size, hovering_over_list_index + 1)
-                end
-
-                for i, item in ipairs(interaction_list) do
-                    local text_pos = item.text_pos
-                    local is_selected = (i == hovering_over_list_index)
-                    local text = item.option.label
-                    if text == nil then text = "unknown" end
-                    if is_selected then text = "> " .. item.option.label .. " <" end
-
-                    local z_offset = 0.4 - ((i - 1) * 0.08)
-                    draw_text_3d(text_pos.x, text_pos.y, text_pos.z + z_offset, text, is_selected)
-                end
-
-                -- BeginTextCommandDisplayHelp("STRING")
-                -- AddTextComponentSubstringPlayerName("Press ~INPUT_CONTEXT~ to interact")
-                -- EndTextCommandDisplayHelp(0, false, true, -1)
-
-                if IsControlJustPressed(0, 38) or IsControlJustPressed(0, 18) then -- E, Enter
-                    local selected_interaction = interaction_list[hovering_over_list_index]
-                    if type(selected_interaction.option.onSelect) == "function" then
-                        selected_interaction.option.onSelect()
-                    end
-                    break
-                end
-            end
-            interaction_loop_active = false
-        end)
-    end
-
     CreateThread(function()
         local player_ped = PlayerPedId()
 
@@ -315,9 +343,10 @@ function ProximityTarget:addBoxZone(data)
             local player_coords = GetEntityCoords(player_ped)
             local is_close = #(player_coords - coords) < maximum_raycast_length
             if is_close and can_player_interact() then
+                local some_interaction_possible = false
                 for i, option in ipairs(data.options) do
                     local distance = option.distance
-                    if distance == nil then distance = distance_default_value end
+                    if distance == nil then distance = DISTANCE_DEFAULT end
                     local canInteract = option.canInteract
 
                     if type(canInteract) ~= "function" or canInteract() then
@@ -328,7 +357,7 @@ function ProximityTarget:addBoxZone(data)
                                 option = option,
                                 text_pos = coords
                             }
-                            interaction_loop()
+                            some_interaction_possible = true
                         else
                             interactions[i] = false
                         end
@@ -336,11 +365,14 @@ function ProximityTarget:addBoxZone(data)
                         interactions[i] = false
                     end
                 end
+                if some_interaction_possible then
+                    interaction_loop(data, interactions, zone_id)
+                end
             else
                 interactions = {}
             end
 
-            Wait(1000)
+            Wait(500)
         end
     end)
 
@@ -352,69 +384,8 @@ function ProximityTarget:addLocalEntity(entity, data)
     local zone_id = get_next_id()
     custom_zone[zone_id] = true
     local interactions = {}
-    local interaction_loop_active = false
 
-    local maximum_raycast_length = get_maximum_raycast_length(data)
-
-    local function interaction_loop()
-        if interaction_loop_active then return end
-        interaction_loop_active = true
-
-        CreateThread(function()
-            local hovering_over_list_index = 1
-            while true do
-                Wait(0)
-
-                if not can_player_interact() then break end
-
-                local interaction_list = {}
-                for i, _ in ipairs(data) do
-                    if interactions[i] ~= false then
-                        interaction_list[#interaction_list + 1] = interactions[i]
-                    end
-                end
-
-                local interaction_list_size = #interaction_list
-                if interaction_list_size == 0 then break end
-
-                if hovering_over_list_index > interaction_list_size then
-                    hovering_over_list_index = interaction_list_size
-                elseif hovering_over_list_index < 1 then
-                    hovering_over_list_index = 1
-                end
-
-                if IsControlJustPressed(0, 172) then -- Arrow up
-                    hovering_over_list_index = math.max(1, hovering_over_list_index - 1)
-                elseif IsControlJustPressed(0, 173) then -- Arrow down
-                    hovering_over_list_index = math.min(interaction_list_size, hovering_over_list_index + 1)
-                end
-
-                for i, item in ipairs(interaction_list) do
-                    local text_pos = item.text_pos
-                    local is_selected = (i == hovering_over_list_index)
-                    local text = item.option.label
-                    if text == nil then text = "unknown" end
-                    if is_selected then text = "> " .. item.option.label .. " <" end
-
-                    local z_offset = 0.4 - ((i - 1) * 0.08)
-                    draw_text_3d(text_pos.x, text_pos.y, text_pos.z + z_offset, text, is_selected)
-                end
-
-                -- BeginTextCommandDisplayHelp("STRING")
-                -- AddTextComponentSubstringPlayerName("Press ~INPUT_CONTEXT~ to interact")
-                -- EndTextCommandDisplayHelp(0, false, true, -1)
-
-                if IsControlJustPressed(0, 38) or IsControlJustPressed(0, 18) then -- E, Enter
-                    local selected_interaction = interaction_list[hovering_over_list_index]
-                    if type(selected_interaction.option.onSelect) == "function" then
-                        selected_interaction.option.onSelect()
-                    end
-                    break
-                end
-            end
-            interaction_loop_active = false
-        end)
-    end
+    local maximum_raycast_length = get_maximum_raycast_length(data) + get_maximum_bone_offset(entity, data)
 
     CreateThread(function()
         local player_ped = PlayerPedId()
@@ -425,33 +396,35 @@ function ProximityTarget:addLocalEntity(entity, data)
             local are_close = #(player_coords - entity_coords) < maximum_raycast_length
 
             if are_close and can_player_interact() then
+                local some_interaction_possible = false
                 for i, option in ipairs(data) do
                     local distance = option.distance
-                    if distance == nil then distance = distance_default_value end
+                    if distance == nil then distance = DISTANCE_DEFAULT end
                     local canInteract = option.canInteract
 
                     if type(canInteract) ~= "function" or canInteract() then
                         local bones = option.bones
                         local hit_coords = throw_raycast(entity)
                         local target_coords = entity_coords
-                        -- local closest_to_rc = math.huge
 
                         local valid_interaction = false
                         if hit_coords ~= nil and bones then
-                        --     for _, bone_name in ipairs(bones) do
-                        --         local bone_index = GetEntityBoneIndexByName(entity, bone_name)
-                        --         if bone_index ~= -1 then
-                        --             local bone_coords = GetWorldPositionOfEntityBone(entity, bone_index)
-                        --             local diff = #(hit_coords - bone_coords)
-                        --             if diff < closest_to_rc then
-                        --                 closest_to_rc = diff
-                        --                 target_coords = bone_coords
-                        --             end
-                        --             valid_interaction = valid_interaction
-                        --                 or #(player_coords - bone_coords) < distance
-                        --         end
-                        --     end
-                            valid_interaction = #(player_coords - hit_coords) < distance -- Temporary fix
+                            local closest_to_rc = math.huge
+
+                            for _, bone_name in ipairs(bones) do
+                                local bone_index = GetEntityBoneIndexByName(entity, bone_name)
+                                if bone_index ~= -1 then
+                                    local bone_coords = GetWorldPositionOfEntityBone(entity, bone_index)
+                                    local diff = #(hit_coords - bone_coords)
+                                    if diff < closest_to_rc then
+                                        closest_to_rc = diff
+                                        target_coords = bone_coords
+                                    end
+                                end
+                            end
+
+                            valid_interaction = #(player_coords - hit_coords) < distance
+                                and #(hit_coords - target_coords) < RAYCAST_BONE_DISTANCE
                         elseif hit_coords ~= nil then
                             valid_interaction = #(player_coords - hit_coords) < distance
                         end
@@ -461,7 +434,7 @@ function ProximityTarget:addLocalEntity(entity, data)
                                 option = option,
                                 text_pos = target_coords
                             }
-                            interaction_loop()
+                            some_interaction_possible = true
                         else
                             interactions[i] = false
                         end
@@ -469,11 +442,14 @@ function ProximityTarget:addLocalEntity(entity, data)
                         interactions[i] = false
                     end
                 end
+                if some_interaction_possible then
+                    interaction_loop(data, interactions, zone_id)
+                end
             else
                 interactions = {}
             end
 
-            Wait(1000)
+            Wait(400)
         end
     end)
 
@@ -569,7 +545,7 @@ function ProximityTarget:box(data)
                 if type(onExit) == "function" then onExit() end
             end
 
-            Wait(1000)
+            Wait(500)
         end
     end)
 
