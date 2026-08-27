@@ -234,6 +234,7 @@ RegisterNetEvent('human_labs_raid:client:npc:make_entry_attendant_interactable',
             name = 'talk_to_entry_guard',
             label = Locale.npc.entry.entry_attendant_ask,
             icon = 'fa-solid fa-question',
+            distance = 2.0,
             canInteract = function()
                 return not Hostile
             end,
@@ -248,6 +249,7 @@ RegisterNetEvent('human_labs_raid:client:npc:make_entry_attendant_interactable',
             name = 'show_permit_to_entry_guard',
             label = Locale.npc.entry.show_permit,
             icon = 'fa-solid fa-ticket-simple',
+            distance = 2.0,
             canInteract = function()
                 return not Hostile and not Entity(ped).state.checking_permit
             end,

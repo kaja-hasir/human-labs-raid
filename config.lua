@@ -140,6 +140,7 @@ Config.framework = {
     target = {
         use_auto = true,
         use_ox_target = false, -- Make sure to include '@ox_lib/init.lua' in shared_scripts of fxmanifest.lua if using ox
+        use_proximity = false, -- No library, fully native
         use_custom = false,
         custom = {
             -- To understand parameters look at definition of ox_target:addBoxZone and ox_target:addLocalEntity(data)

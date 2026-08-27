@@ -237,7 +237,7 @@ local function search_driver_seat(vehicle, vehicle_net_id)
     local anim_dict = 'anim@heists@prison_heiststation@cop_reactions'
     local anim = 'cop_b_idle'
 
-    TaskEnterVehicle(player_ped, vehicle, 4000, -1, 1.0, 8, 0)
+    TaskEnterVehicle(player_ped, vehicle, 20000, -1, 1.0, 8, 0)
     if RepeatFunctionUntilTrueWithTimeout(IsPedInVehicle, { player_ped, vehicle, false }) then return end
 
     RequestAnimDict(anim_dict)
@@ -259,7 +259,7 @@ local function search_passanger_seat(vehicle, vehicle_net_id)
     local anim_dict = 'mini@repair'
     local anim = 'fixing_a_ped'
 
-    TaskEnterVehicle(player_ped, vehicle, 4000, 0, 1.0, 8, 0)
+    TaskEnterVehicle(player_ped, vehicle, 20000, 0, 1.0, 8, 0)
     if RepeatFunctionUntilTrueWithTimeout(IsPedInVehicle, { player_ped, vehicle, false }) then return end
 
     RequestAnimDict(anim_dict)
@@ -281,7 +281,7 @@ local function search_trunk(vehicle, vehicle_net_id)
     local anim_dict = 'mini@repair'
     local anim = 'fixing_a_ped'
 
-    TaskEnterVehicle(player_ped, vehicle, 3000, 1, 1.0, 8, 0)
+    TaskEnterVehicle(player_ped, vehicle, 20000, 1, 1.0, 8, 0)
     if RepeatFunctionUntilTrueWithTimeout(function()
         return GetVehicleDoorAngleRatio(vehicle, 2) > 0.6
     end, {}) then return end

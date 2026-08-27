@@ -3,6 +3,7 @@ Target = {}
 local config = Config.framework.target
 local use_auto = config.use_auto
 local use_ox_target = config.use_ox_lib
+local use_proximity = config.use_proximity
 local use_custom = config.use_custom
 
 if use_auto then
@@ -35,11 +36,7 @@ if use_ox_target then
     function Target:removeZone(zone)
         zone:remove()
     end
-else
-    if not use_custom then
-        warn("No Target library specified, disabling notification function completely")
-    end
-
+elseif use_custom then
     function Target:loaded()
         return config.custom.dependencies_ready()
     end
@@ -63,5 +60,34 @@ else
     end
     function Target:removeZone(zone)
         config.custom.remove_zone(zone)
+    end
+else
+    if not use_proximity then
+        warn("No Target library specified, using native solution")
+    end
+
+    function Target:loaded()
+        return ProximityTarget:loaded()
+    end
+    function Target:addBoxZone(data)
+        return ProximityTarget:addBoxZone(data)
+    end
+    function Target:addLocalEntity(entity, data)
+        return ProximityTarget:addLocalEntity(entity, data)
+    end
+    function Target:removeArea(id)
+        ProximityTarget:removeArea(id)
+    end
+    function Target:poly(data)
+        return ProximityTarget:poly(data)
+    end
+    function Target:box(data)
+        return ProximityTarget:box(data)
+    end
+    function Target:sphere(data)
+        return ProximityTarget:sphere(data)
+    end
+    function Target:removeZone(zone)
+        ProximityTarget:removeZone(zone)
     end
 end
