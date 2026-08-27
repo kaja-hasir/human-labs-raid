@@ -1,6 +1,6 @@
 local elevator_top = nil
 local elevator_bottom = nil
-
+local using_elevator = false
 
 function StartElevator()
     if not Config.zones.elevator_target_enabled then return end
@@ -16,9 +16,17 @@ function StartElevator()
             name = "elevator_use",
             icon = "fa-solid fa-elevator",
             distance = 2.0,
+            canInteract = function() return not using_elevator end,
             onSelect = function()
+                using_elevator = true
+                DoScreenFadeOut(750)
+                while not IsScreenFadedOut() do Wait(0) end
                 local target = Config.zones.elevator_bottom_spawn
-                StartPlayerTeleport(PlayerId(), target.x, target.y, target.z, target.w, false, false, false)
+                SetEntityCoords(PlayerPedId(), target.x, target.y, target.z, true, false, false, false)
+                SetEntityHeading(PlayerPedId(), target.w)
+                DoScreenFadeIn(750)
+                while not IsScreenFadedIn() do Wait(0) end
+                using_elevator = false
             end
         }}
     })
@@ -34,9 +42,17 @@ function StartElevator()
             name = "elevator_use",
             icon = "fa-solid fa-elevator",
             distance = 2.0,
+            canInteract = function() return not using_elevator end,
             onSelect = function()
+                using_elevator = true
+                DoScreenFadeOut(750)
+                while not IsScreenFadedOut() do Wait(0) end
                 local target = Config.zones.elevator_top_spawn
-                StartPlayerTeleport(PlayerId(), target.x, target.y, target.z, target.w, false, false, false)
+                SetEntityCoords(PlayerPedId(), target.x, target.y, target.z, true, false, false, false)
+                SetEntityHeading(PlayerPedId(), target.w)
+                DoScreenFadeIn(750)
+                while not IsScreenFadedIn() do Wait(0) end
+                using_elevator = false
             end
         }}
     })

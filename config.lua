@@ -107,12 +107,12 @@ Config.zones = {
     lab_zone_rotation = 350.0,
 
     elevator_target_enabled = true, -- Sometimes no native elevator exists, so this is an alternative elevator
-    elevator_top_zone_coords = vec3(3540.7695, 3676.3013, 28.1211),
-    elevator_top_zone_size = vec3(3.0, 2.0, 2.0),
+    elevator_top_zone_coords = vec3(3540.7695, 3676.3013, 28.5),
+    elevator_top_zone_size = vec3(3.5, 2.5, 3.0),
     elevator_top_zone_rotation = 349.0,
     elevator_top_spawn = vec4(3540.4463, 3675.2473, 27.1211, 171.6435),
-    elevator_bottom_zone_coords = vec3(3540.7336, 3676.1060, 19.9918),
-    elevator_bottom_zone_size = vec3(3.0, 2.0, 5.0),
+    elevator_bottom_zone_coords = vec3(3540.7336, 3676.34, 21.3),
+    elevator_bottom_zone_size = vec3(3.5, 2.5, 3.0),
     elevator_bottom_zone_rotation = 349.0,
     elevator_bottom_spawn = vec4(3540.6404, 3675.5139, 19.9918, 169.1046),
 }
