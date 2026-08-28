@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 author 'Kaja Hasir'
 description 'Human Labs Raid'
-version '1.3.0'
+version '1.4.0'
 
 ui_page 'html/index.html'
 
