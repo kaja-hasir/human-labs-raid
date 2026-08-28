@@ -13,17 +13,17 @@ class Suspicion {
 
         this.panel_active = false;
         this.loop = this.loop.bind(this);
-        this.lastTS = null;
-        this.animTime = 0;
+        this.last_ts = null;
+        this.anim_time = 0;
 
-        this._blinkPhase = 0;
-        this._pulsePhase = 0;
-        this._scanOffset = 0;
-        this._particles = [];
-        this._transitionAlpha = 0;
+        this.blink_phase = 0;
+        this.pulse_phase = 0;
+        this.scan_offset = 0;
+        this.particles = [];
+        this.transition_alpha = 0;
 
-        this._vignetteEl = null;
-        this._vignetteVisible = false;
+        this.vignette_ele = null;
+        this.vignette_visible = false;
 
         this.suspicion_level = 0;
         this.suspicion_amount = 0;
@@ -45,8 +45,8 @@ class Suspicion {
 
     show_panel() {
         if (this.panel_active) return;
-        this._particles = this._createParticles();
-        this._createVignette();
+        this.particles = this.create_particles();
+        this.create_vignette();
         this.build_ui();
         this.panel_active = true;
     }
@@ -55,104 +55,104 @@ class Suspicion {
         this.suspicion_level = level;
         this.suspicion_amount = amount;
         this.suspicion_text = text;
-        this._transitionAlpha = 1.0;
-        this._applyLevelStyles();
-        this._updateText();
-        this._updateAmountBar();
+        this.transition_alpha = 1.0;
+        this.apply_level_styles();
+        this.updateText();
+        this.updateAmountBar();
     }
 
-    _levelConfig(level) {
+    level_config(level) {
         const configs = [
             {
                 label: 'Undetected',
                 color: 'rgba(138,184,160,1)',
-                colorDim: 'rgba(58,90,72,1)',
-                colorGlow: 'rgba(138,184,160,0.12)',
-                bgColor: 'rgba(4,12,8,0.78)',
-                borderColor: 'rgba(138,184,160,0.28)',
+                color_dim: 'rgba(58,90,72,1)',
+                color_glow: 'rgba(138,184,160,0.12)',
+                bg_color: 'rgba(4,12,8,0.78)',
+                border_color: 'rgba(138,184,160,0.28)',
                 icon: '◈',
-                barCount: 0,
-                scanSpeed: 0.12,
-                ringCount: 0,
-                pulseSpeed: 0,
-                iconScale: 1.0,
-                blinkRate: 0,
-                rotateIcon: false,
-                shakeIcon: false,
+                bar_count: 0,
+                scan_speed: 0.12,
+                ring_count: 0,
+                pulse_speed: 0,
+                icon_scale: 1.0,
+                blink_rate: 0,
+                rotate_icon: false,
+                shake_icon: false,
             },
             {
                 label: 'Restricted Area',
                 color: 'rgba(245,197,24,1)',
-                colorDim: 'rgba(122,96,8,1)',
-                colorGlow: 'rgba(245,197,24,0.18)',
-                bgColor: 'rgba(14,10,0,0.86)',
-                borderColor: 'rgba(245,197,24,0.38)',
+                color_dim: 'rgba(122,96,8,1)',
+                color_glow: 'rgba(245,197,24,0.18)',
+                bg_color: 'rgba(14,10,0,0.86)',
+                border_color: 'rgba(245,197,24,0.38)',
                 icon: '⚠',
-                barCount: 1,
-                scanSpeed: 0.22,
-                ringCount: 1,
-                pulseSpeed: 1.2,
-                iconScale: 1.05,
-                blinkRate: 0,
-                rotateIcon: false,
-                shakeIcon: false,
+                bar_count: 1,
+                scan_speed: 0.22,
+                ring_count: 1,
+                pulse_speed: 1.2,
+                icon_scale: 1.05,
+                blink_rate: 0,
+                rotate_icon: false,
+                shake_icon: false,
             },
             {
                 label: 'Suspicious Activity',
                 color: 'rgba(255,140,26,1)',
-                colorDim: 'rgba(122,58,0,1)',
-                colorGlow: 'rgba(255,140,26,0.46)',
-                bgColor: 'rgba(18,6,0,0.90)',
-                borderColor: 'rgba(255,140,26,0.48)',
+                color_dim: 'rgba(122,58,0,1)',
+                color_glow: 'rgba(255,140,26,0.46)',
+                bg_color: 'rgba(18,6,0,0.90)',
+                border_color: 'rgba(255,140,26,0.48)',
                 icon: '◉',
-                barCount: 2,
-                scanSpeed: 0.5,
-                ringCount: 2,
-                pulseSpeed: 2.0,
-                iconScale: 1.12,
-                blinkRate: 2.2,
-                rotateIcon: false,
-                shakeIcon: false,
+                bar_count: 2,
+                scan_speed: 0.5,
+                ring_count: 2,
+                pulse_speed: 2.0,
+                icon_scale: 1.12,
+                blink_rate: 2.2,
+                rotate_icon: false,
+                shake_icon: false,
             },
             {
                 label: 'Target Spotted',
                 color: 'rgba(255,56,56,1)',
-                colorDim: 'rgba(122,0,0,1)',
-                colorGlow: 'rgba(255,56,56,0.28)',
-                bgColor: 'rgba(20,0,0,0.93)',
-                borderColor: 'rgba(255,56,56,0.6)',
+                color_dim: 'rgba(122,0,0,1)',
+                color_glow: 'rgba(255,56,56,0.28)',
+                bg_color: 'rgba(20,0,0,0.93)',
+                border_color: 'rgba(255,56,56,0.6)',
                 icon: '◎',
-                barCount: 3,
-                scanSpeed: 0.85,
-                ringCount: 3,
-                pulseSpeed: 3.2,
-                iconScale: 1.2,
-                blinkRate: 3.2,
-                rotateIcon: false,
-                shakeIcon: true,
+                bar_count: 3,
+                scan_speed: 0.85,
+                ring_count: 3,
+                pulse_speed: 3.2,
+                icon_scale: 1.2,
+                blink_rate: 3.2,
+                rotate_icon: false,
+                shake_icon: true,
             },
             {
                 label: 'Full Alarm',
                 color: 'rgba(255,26,26,1)',
-                colorDim: 'rgba(106,0,0,1)',
-                colorGlow: 'rgba(255,26,26,0.05)',
-                bgColor: 'rgba(26,0,0,0.96)',
-                borderColor: 'rgba(255,26,26,0.75)',
+                color_dim: 'rgba(106,0,0,1)',
+                color_glow: 'rgba(255,26,26,0.05)',
+                bg_color: 'rgba(26,0,0,0.96)',
+                border_color: 'rgba(255,26,26,0.75)',
                 icon: '☢',
-                barCount: 4,
-                scanSpeed: 1.4,
-                ringCount: 4,
-                pulseSpeed: 0.5,
-                iconScale: 1.3,
-                blinkRate: 0,
-                rotateIcon: true,
-                shakeIcon: false,
+                bar_count: 4,
+                scan_speed: 1.4,
+                ring_count: 4,
+                pulse_speed: 0.5,
+                icon_scale: 1.3,
+                blink_rate: 0,
+                rotate_icon: true,
+                shake_icon: false,
             },
         ];
         return configs[Math.max(0, Math.min(4, level))];
     }
 
-    _createParticles() {
+    create_particles() {
         const pts = [];
         for (let i = 0; i < 10; i++) {
             pts.push({
@@ -167,9 +167,9 @@ class Suspicion {
         return pts;
     }
 
-    _createVignette() {
+    create_vignette() {
         if (document.getElementById('susp-vignette')) {
-            this._vignetteEl = document.getElementById('susp-vignette');
+            this.vignette_ele = document.getElementById('susp-vignette');
             return;
         }
 
@@ -185,21 +185,21 @@ class Suspicion {
         vin.appendChild(pulse);
 
         document.body.appendChild(vin);
-        this._vignetteEl = vin;
+        this.vignette_ele = vin;
     }
 
-    _updateVignette(cfg) {
+    update_vignette(cfg) {
         const vin = document.getElementById('susp-vignette');
         const edge = document.getElementById('susp-vignette-edge');
         if (!vin || !edge) return;
 
-        const shouldShow = this.vignetta_effect && this.suspicion_level >= 2;
-        this._vignetteVisible = shouldShow;
-        vin.style.opacity = shouldShow ? '1' : '0';
+        const should_show = this.vignetta_effect && this.suspicion_level >= 2;
+        this.vignette_visible = should_show;
+        vin.style.opacity = should_show ? '1' : '0';
 
-        const spread = 40 + cfg.ringCount * 25;
-        const blur = 120 + cfg.ringCount * 40;
-        edge.style.boxShadow = `inset 0 0 ${blur}px ${spread}px ${cfg.colorGlow}`;
+        const spread = 40 + cfg.ring_count * 25;
+        const blur = 120 + cfg.ring_count * 40;
+        edge.style.boxShadow = `inset 0 0 ${blur}px ${spread}px ${cfg.color_glow}`;
 
         const pulse = document.getElementById('susp-vignette-pulse');
         if (pulse) {
@@ -208,7 +208,7 @@ class Suspicion {
     }
 
     build_ui() {
-        const cfg = this._levelConfig(this.suspicion_level);
+        const cfg = this.level_config(this.suspicion_level);
         const container = document.getElementById('suspicion_level_container');
 
         const panel = document.createElement('div');
@@ -235,34 +235,34 @@ class Suspicion {
 
         const inner = document.createElement('div');
         inner.id = 'susp-inner';
-        inner.style.background = cfg.bgColor;
+        inner.style.background = cfg.bg_color;
 
         const canvas = document.createElement('canvas');
         canvas.id = 'susp-canvas';
         inner.appendChild(canvas);
 
-        const borderSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        borderSvg.id = 'susp-border-svg';
-        borderSvg.setAttribute('preserveAspectRatio', 'none');
-        inner.appendChild(borderSvg);
+        const border_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        border_svg.id = 'susp-border-svg';
+        border_svg.setAttribute('preserveAspectRatio', 'none');
+        inner.appendChild(border_svg);
 
-        const iconWrap = document.createElement('div');
-        iconWrap.id = 'susp-icon-wrap';
+        const icon_wrap = document.createElement('div');
+        icon_wrap.id = 'susp-icon-wrap';
 
-        const iconCanvas = document.createElement('canvas');
-        iconCanvas.id = 'susp-icon-canvas';
-        iconCanvas.width = 52;
-        iconCanvas.height = 52;
-        iconWrap.appendChild(iconCanvas);
+        const icon_canvas = document.createElement('canvas');
+        icon_canvas.id = 'susp-icon-canvas';
+        icon_canvas.width = 52;
+        icon_canvas.height = 52;
+        icon_wrap.appendChild(icon_canvas);
 
         const icon = document.createElement('span');
         icon.id = 'susp-icon';
         icon.style.color = cfg.color;
         icon.style.transformOrigin = 'center center';
         icon.textContent = cfg.icon;
-        iconWrap.appendChild(icon);
+        icon_wrap.appendChild(icon);
 
-        inner.appendChild(iconWrap);
+        inner.appendChild(icon_wrap);
 
         const label = document.createElement('span');
         label.id = 'susp-label';
@@ -276,99 +276,98 @@ class Suspicion {
         text.textContent = this.suspicion_text;
         inner.appendChild(text);
 
-        const amountWrap = document.createElement('div');
-        amountWrap.id = 'susp-amount-wrap';
-        amountWrap.style.width = '100%';
-        amountWrap.style.padding = '2px 8px';
-        amountWrap.style.boxSizing = 'border-box';
-        amountWrap.style.display = (this.suspicion_level === 2 || this.suspicion_level === 3) ? 'block' : 'none';
+        const amount_wrap = document.createElement('div');
+        amount_wrap.id = 'susp-amount-wrap';
+        amount_wrap.style.width = '100%';
+        amount_wrap.style.padding = '2px 8px';
+        amount_wrap.style.boxSizing = 'border-box';
+        amount_wrap.style.display = (this.suspicion_level === 2 || this.suspicion_level === 3) ? 'block' : 'none';
 
-        const amountBar = document.createElement('div');
-        amountBar.id = 'susp-amount-bar';
-        amountBar.style.height = '3px';
-        amountBar.style.width = '100%';
-        amountBar.style.background = 'rgba(0,0,0,0.5)';
-        amountBar.style.border = `1px solid ${cfg.colorDim}`;
-        amountBar.style.borderRadius = '1px';
-        amountBar.style.overflow = 'hidden';
-        amountBar.style.position = 'relative';
+        const amount_bar = document.createElement('div');
+        amount_bar.id = 'susp-amount-bar';
+        amount_bar.style.height = '3px';
+        amount_bar.style.width = '100%';
+        amount_bar.style.background = 'rgba(0,0,0,0.5)';
+        amount_bar.style.border = `1px solid ${cfg.color_dim}`;
+        amount_bar.style.borderRadius = '1px';
+        amount_bar.style.overflow = 'hidden';
+        amount_bar.style.position = 'relative';
 
-        const amountFill = document.createElement('div');
-        amountFill.id = 'susp-amount-fill';
-        amountFill.style.height = '100%';
-        amountFill.style.width = `${(Math.max(0, Math.min(1, this.suspicion_amount ?? 0)) * 100).toFixed(1)}%`;
-        amountFill.style.background = cfg.color;
-        amountFill.style.boxShadow = `0 0 6px ${cfg.color}`;
-        amountFill.style.borderRadius = '1px';
-        amountFill.style.transition = 'width 0.25s ease';
+        const amount_fill = document.createElement('div');
+        amount_fill.id = 'susp-amount-fill';
+        amount_fill.style.height = '100%';
+        amount_fill.style.width = `${(Math.max(0, Math.min(1, this.suspicion_amount ?? 0)) * 100).toFixed(1)}%`;
+        amount_fill.style.background = cfg.color;
+        amount_fill.style.boxShadow = `0 0 6px ${cfg.color}`;
+        amount_fill.style.borderRadius = '1px';
+        amount_fill.style.transition = 'width 0.25s ease';
 
-        amountBar.appendChild(amountFill);
-        amountWrap.appendChild(amountBar);
-        inner.appendChild(amountWrap);
+        amount_bar.appendChild(amount_fill);
+        amount_wrap.appendChild(amount_bar);
+        inner.appendChild(amount_wrap);
 
-        const tabBottom = document.createElement('div');
-        tabBottom.id = 'susp-tab-bottom';
+        const tab_bottom = document.createElement('div');
+        tab_bottom.id = 'susp-tab-bottom';
         for (let i = 0; i < 4; i++) {
             const bar = document.createElement('div');
             bar.className = 'susp-bar';
-            bar.style.background = i < cfg.barCount ? cfg.color : cfg.colorDim;
-            bar.style.opacity = i < cfg.barCount ? '1' : '0.2';
-            tabBottom.appendChild(bar);
+            bar.style.background = i < cfg.bar_count ? cfg.color : cfg.color_dim;
+            bar.style.opacity = i < cfg.bar_count ? '1' : '0.2';
+            tab_bottom.appendChild(bar);
         }
-        inner.appendChild(tabBottom);
+        inner.appendChild(tab_bottom);
 
         wrap.appendChild(inner);
 
-        const tabFoot = document.createElement('div');
-        tabFoot.id = 'susp-tab-foot';
+        const tab_foot = document.createElement('div');
+        tab_foot.id = 'susp-tab-foot';
 
-        const footCornerL = document.createElement('div');
-        footCornerL.className = 'susp-foot-corner susp-foot-corner-l';
-        footCornerL.style.borderColor = cfg.borderColor;
+        const foot_corner_left = document.createElement('div');
+        foot_corner_left.className = 'susp-foot-corner susp-foot-corner-l';
+        foot_corner_left.style.border_color = cfg.border_color;
 
-        const footLineL = document.createElement('div');
-        footLineL.className = 'susp-foot-line';
-        footLineL.style.background = cfg.borderColor;
+        const foot_line_left = document.createElement('div');
+        foot_line_left.className = 'susp-foot-line';
+        foot_line_left.style.background = cfg.border_color;
 
-        const footLineR = document.createElement('div');
-        footLineR.className = 'susp-foot-line';
-        footLineR.style.background = cfg.borderColor;
+        const foot_line_right = document.createElement('div');
+        foot_line_right.className = 'susp-foot-line';
+        foot_line_right.style.background = cfg.border_color;
 
-        const footCornerR = document.createElement('div');
-        footCornerR.className = 'susp-foot-corner susp-foot-corner-r';
-        footCornerR.style.borderColor = cfg.borderColor;
+        const foot_corner_right = document.createElement('div');
+        foot_corner_right.className = 'susp-foot-corner susp-foot-corner-r';
+        foot_corner_right.style.border_color = cfg.border_color;
 
-        tabFoot.appendChild(footCornerL);
-        tabFoot.appendChild(footLineL);
-        tabFoot.appendChild(footLineR);
-        tabFoot.appendChild(footCornerR);
-        wrap.appendChild(tabFoot);
+        tab_foot.appendChild(foot_corner_left);
+        tab_foot.appendChild(foot_line_left);
+        tab_foot.appendChild(foot_line_right);
+        tab_foot.appendChild(foot_corner_right);
+        wrap.appendChild(tab_foot);
 
         panel.appendChild(wrap);
         container.prepend(panel);
 
-        this._canvas = canvas;
-        this._ctx = canvas.getContext('2d');
-        this._iconCanvas = iconCanvas;
-        this._iconCtx = iconCanvas.getContext('2d');
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.icon_ctx = icon_canvas.getContext('2d');
 
-        this._resizeCanvas();
-        window.addEventListener('resize', () => this._resizeCanvas());
-        this._updateBorderSvg(cfg);
-        this._updateVignette(cfg);
+        this.resize_canvas();
+        window.addEventListener('resize', () => this.resize_canvas());
+        this.update_border_svg(cfg);
+        this.update_vignette(cfg);
 
-        this.animFrame = requestAnimationFrame(this.loop);
+        this.anim_frame = requestAnimationFrame(this.loop);
     }
 
-    _resizeCanvas() {
-        if (!this._canvas) return;
-        const w = this._canvas.offsetWidth || 280;
-        const h = this._canvas.offsetHeight || 120;
-        this._canvas.width = w;
-        this._canvas.height = h;
+    resize_canvas() {
+        if (!this.canvas) return;
+        const w = this.canvas.offsetWidth || 280;
+        const h = this.canvas.offsetHeight || 120;
+        this.canvas.width = w;
+        this.canvas.height = h;
     }
 
-    _updateBorderSvg(cfg) {
+    update_border_svg(cfg) {
         const svg = document.getElementById('susp-border-svg');
         if (!svg) return;
         svg.innerHTML = '';
@@ -380,7 +379,7 @@ class Suspicion {
 
         svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
-        const makePolyline = (pts, stroke, sw, opacity) => {
+        const make_poly_line = (pts, stroke, sw, opacity) => {
             const el = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
             el.setAttribute('points', pts.map(p => p.join(',')).join(' '));
             el.setAttribute('stroke', stroke);
@@ -390,7 +389,7 @@ class Suspicion {
             return el;
         };
 
-        const outerPts = [
+        const outer_points = [
             [tc, 0], [W - tc, 0],
             [W, 0], [W, c],
             [W, H - c], [W, H],
@@ -399,126 +398,124 @@ class Suspicion {
             [0, c], [0, 0],
             [c, 0], [tc, 0],
         ];
-        svg.appendChild(makePolyline(outerPts, cfg.color, '1', '0.5'));
+        svg.appendChild(make_poly_line(outer_points, cfg.color, '1', '0.5'));
 
-        const cornerLen = 18;
+        const corner_len = 18;
         const corners = [
-            [[0, cornerLen], [0, 0], [cornerLen, 0]],
-            [[W - cornerLen, 0], [W, 0], [W, cornerLen]],
-            [[W, H - cornerLen], [W, H], [W - cornerLen, H]],
-            [[cornerLen, H], [0, H], [0, H - cornerLen]],
+            [[0, corner_len], [0, 0], [corner_len, 0]],
+            [[W - corner_len, 0], [W, 0], [W, corner_len]],
+            [[W, H - corner_len], [W, H], [W - corner_len, H]],
+            [[corner_len, H], [0, H], [0, H - corner_len]],
         ];
         corners.forEach(pts => {
-            svg.appendChild(makePolyline(pts, cfg.color, '1.5', '0.9'));
+            svg.appendChild(make_poly_line(pts, cfg.color, '1.5', '0.9'));
         });
 
-        const notchSize = 5;
+        const notch_size = 5;
         [[tc, 0], [W - tc, 0]].forEach(([x]) => {
             const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             tick.setAttribute('x1', x); tick.setAttribute('y1', 0);
-            tick.setAttribute('x2', x); tick.setAttribute('y2', notchSize);
+            tick.setAttribute('x2', x); tick.setAttribute('y2', notch_size);
             tick.setAttribute('stroke', cfg.color);
             tick.setAttribute('stroke-width', '1');
             tick.setAttribute('opacity', '0.7');
             svg.appendChild(tick);
         });
-
-        this._svgCfgColor = cfg.color;
     }
 
-    _applyLevelStyles() {
-        const cfg = this._levelConfig(this.suspicion_level);
+    apply_level_styles() {
+        const cfg = this.level_config(this.suspicion_level);
         const inner = document.getElementById('susp-inner');
         if (!inner) return;
-        inner.style.background = cfg.bgColor;
+        inner.style.background = cfg.bg_color;
 
         ['susp-icon', 'susp-label', 'susp-text'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.style.color = cfg.color;
         });
 
-        const iconEl = document.getElementById('susp-icon');
-        if (iconEl) iconEl.textContent = cfg.icon;
+        const icon_ele = document.getElementById('susp-icon');
+        if (icon_ele) icon_ele.textContent = cfg.icon;
 
-        const labelEl = document.getElementById('susp-label');
-        if (labelEl) labelEl.textContent = this.suspicion_titles[this.suspicion_level];
+        const label_ele = document.getElementById('susp-label');
+        if (label_ele) label_ele.textContent = this.suspicion_titles[this.suspicion_level];
 
         document.querySelectorAll('.susp-bar').forEach((bar, i) => {
-            bar.style.background = i < cfg.barCount ? cfg.color : cfg.colorDim;
-            bar.style.opacity = i < cfg.barCount ? '1' : '0.2';
+            bar.style.background = i < cfg.bar_count ? cfg.color : cfg.color_dim;
+            bar.style.opacity = i < cfg.bar_count ? '1' : '0.2';
         });
 
         document.querySelectorAll('.susp-foot-corner').forEach(el => {
-            el.style.borderColor = cfg.borderColor;
+            el.style.border_color = cfg.border_color;
         });
         document.querySelectorAll('.susp-foot-line').forEach(el => {
-            el.style.background = cfg.borderColor;
+            el.style.background = cfg.border_color;
         });
 
-        this._updateBorderSvg(cfg);
-        this._updateVignette(cfg);
+        this.update_border_svg(cfg);
+        this.update_vignette(cfg);
     }
 
-    _updateText() {
+    updateText() {
         const el = document.getElementById('susp-text');
         if (el) el.textContent = this.suspicion_text;
     }
 
-    _updateAmountBar() {
+    updateAmountBar() {
         const wrap = document.getElementById('susp-amount-wrap');
         const fill = document.getElementById('susp-amount-fill');
         const bar = document.getElementById('susp-amount-bar');
         if (!wrap || !fill || !bar) return;
 
-        const showAmount = this.suspicion_level === 2 || this.suspicion_level === 3;
-        wrap.style.display = showAmount ? 'block' : 'none';
+        const show_amount = this.suspicion_level === 2 || this.suspicion_level === 3;
+        wrap.style.display = show_amount ? 'block' : 'none';
 
-        if (showAmount) {
-            const cfg = this._levelConfig(this.suspicion_level);
+        if (show_amount) {
+            const cfg = this.level_config(this.suspicion_level);
             const pct = Math.max(0, Math.min(1, this.suspicion_amount ?? 0));
             fill.style.width = `${(pct * 100).toFixed(1)}%`;
             fill.style.background = cfg.color;
             fill.style.boxShadow = `0 0 6px ${cfg.color}`;
-            bar.style.borderColor = cfg.colorDim;
+            bar.style.border_color = cfg.color_dim;
         }
     }
 
     loop(ts) {
-        if (this.lastTS === null) this.lastTS = ts;
-        const dt = Math.min((ts - this.lastTS) / 1000, 0.05);
-        this.lastTS = ts;
-        this.animTime += dt;
+        if (this.last_ts === null) this.last_ts = ts;
+        const dt = Math.min((ts - this.last_ts) / 1000, 0.05);
+        this.last_ts = ts;
+        this.anim_time += dt;
 
-        const cfg = this._levelConfig(this.suspicion_level);
+        const cfg = this.level_config(this.suspicion_level);
 
-        this._pulsePhase += dt * cfg.pulseSpeed;
-        this._blinkPhase += dt * cfg.blinkRate;
-        this._scanOffset = (this._scanOffset + cfg.scanSpeed * dt) % 1;
+        this.pulse_phase += dt * cfg.pulse_speed;
+        this.blink_phase += dt * cfg.blink_rate;
+        this.scan_offset = (this.scan_offset + cfg.scan_speed * dt) % 1;
 
-        this._animateIcon(cfg);
-        this._drawBackground(dt, cfg);
-        this._drawIconRings(cfg);
-        this._animateVignette(cfg);
+        this.animate_icon(cfg);
+        this.draw_background(dt, cfg);
+        this.draw_icon_rings(cfg);
+        this.animateVignette(cfg);
 
-        this.animFrame = requestAnimationFrame(this.loop);
+        this.anim_frame = requestAnimationFrame(this.loop);
     }
 
-    _animateVignette(cfg) {
-        if (!this._vignetteVisible) return;
+    animateVignette(cfg) {
+        if (!this.vignette_visible) return;
 
         const edge = document.getElementById('susp-vignette-edge');
         const pulse = document.getElementById('susp-vignette-pulse');
         if (!edge) return;
 
-        const breathe = (Math.sin(this._pulsePhase) + 1) / 2;
-        const baseSpread = 40 + cfg.ringCount * 25;
-        const baseBlur = 120 + cfg.ringCount * 40;
-        const spread = baseSpread + breathe * (12 + cfg.ringCount * 6);
-        const blur = baseBlur + breathe * (24 + cfg.ringCount * 10);
-        edge.style.boxShadow = `inset 0 0 ${blur.toFixed(0)}px ${spread.toFixed(0)}px ${cfg.colorGlow}`;
+        const breathe = (Math.sin(this.pulse_phase) + 1) / 2;
+        const base_spread = 40 + cfg.ring_count * 25;
+        const base_blur = 120 + cfg.ring_count * 40;
+        const spread = base_spread + breathe * (12 + cfg.ring_count * 6);
+        const blur = base_blur + breathe * (24 + cfg.ring_count * 10);
+        edge.style.boxShadow = `inset 0 0 ${blur.toFixed(0)}px ${spread.toFixed(0)}px ${cfg.color_glow}`;
 
-        if (cfg.blinkRate > 0) {
-            const blink = (Math.sin(this._blinkPhase * Math.PI * 2) + 1) / 2;
+        if (cfg.blink_rate > 0) {
+            const blink = (Math.sin(this.blink_phase * Math.PI * 2) + 1) / 2;
             edge.style.opacity = (0.55 + blink * 0.45).toFixed(2);
         } else {
             edge.style.opacity = '1';
@@ -526,69 +523,69 @@ class Suspicion {
 
         if (!pulse) return;
 
-        if (cfg.shakeIcon) {
-            // Uncomment for flicker effect of ones where shakeIcon is true
+        if (cfg.shake_icon) {
+            // Uncomment for flicker effect of ones where shake_icon is true
             // const flicker = Math.random() > 0.86 ? (0.12 + Math.random() * 0.16) : 0;
             // pulse.style.opacity = flicker.toFixed(2);
-        } else if (cfg.rotateIcon) {
-            const heartbeat = Math.max(0, Math.sin(this._pulsePhase * 2)) ** 6;
+        } else if (cfg.rotate_icon) {
+            const heartbeat = Math.max(0, Math.sin(this.pulse_phase * 2)) ** 6;
             pulse.style.opacity = (heartbeat * 0.32).toFixed(2);
         } else {
             pulse.style.opacity = '0';
         }
     }
 
-    _animateIcon(cfg) {
-        const iconEl = document.getElementById('susp-icon');
-        if (!iconEl) return;
-        const t = this.animTime;
+    animate_icon(cfg) {
+        const icon_ele = document.getElementById('susp-icon');
+        if (!icon_ele) return;
+        const t = this.anim_time;
 
-        iconEl.style.transform = '';
+        icon_ele.style.transform = '';
 
-        if (cfg.rotateIcon) {
+        if (cfg.rotate_icon) {
             const deg = (t * 30) % 360;
-            iconEl.style.transform = `rotate(${deg.toFixed(1)}deg)`;
-            iconEl.style.opacity = '1';
+            icon_ele.style.transform = `rotate(${deg.toFixed(1)}deg)`;
+            icon_ele.style.opacity = '1';
             return;
         }
 
-        if (cfg.shakeIcon) {
+        if (cfg.shake_icon) {
             const sx = Math.sin(t * 18) * 2.5;
             const sy = Math.cos(t * 22) * 1.5;
-            iconEl.style.transform = `translate(${sx.toFixed(2)}px, ${sy.toFixed(2)}px)`;
+            icon_ele.style.transform = `translate(${sx.toFixed(2)}px, ${sy.toFixed(2)}px)`;
         }
 
-        if (cfg.blinkRate > 0) {
-            const blink = (Math.sin(this._blinkPhase * Math.PI * 2) + 1) / 2;
-            iconEl.style.opacity = (0.2 + blink * 0.8).toFixed(2);
-        } else if (cfg.ringCount > 0) {
-            const breathe = 0.85 + 0.15 * Math.sin(this._pulsePhase);
-            iconEl.style.opacity = breathe.toFixed(2);
+        if (cfg.blink_rate > 0) {
+            const blink = (Math.sin(this.blink_phase * Math.PI * 2) + 1) / 2;
+            icon_ele.style.opacity = (0.2 + blink * 0.8).toFixed(2);
+        } else if (cfg.ring_count > 0) {
+            const breathe = 0.85 + 0.15 * Math.sin(this.pulse_phase);
+            icon_ele.style.opacity = breathe.toFixed(2);
         } else {
-            iconEl.style.opacity = '0.7';
+            icon_ele.style.opacity = '0.7';
         }
 
-        if (cfg.pulseSpeed > 0 && cfg.blinkRate === 0) {
-            const baseScale = cfg.iconScale;
-            const ps = 1.0 + (baseScale - 1.0) * ((Math.sin(this._pulsePhase) + 1) / 2);
-            const existing = iconEl.style.transform;
-            iconEl.style.transform = existing ? `${existing} scale(${ps.toFixed(3)})` : `scale(${ps.toFixed(3)})`;
+        if (cfg.pulse_speed > 0 && cfg.blink_rate === 0) {
+            const base_scale = cfg.icon_scale;
+            const ps = 1.0 + (base_scale - 1.0) * ((Math.sin(this.pulse_phase) + 1) / 2);
+            const existing = icon_ele.style.transform;
+            icon_ele.style.transform = existing ? `${existing} scale(${ps.toFixed(3)})` : `scale(${ps.toFixed(3)})`;
         }
     }
 
-    _drawIconRings(cfg) {
-        const ctx = this._iconCtx;
+    draw_icon_rings(cfg) {
+        const ctx = this.icon_ctx;
         if (!ctx) return;
         ctx.clearRect(0, 0, 52, 52);
-        if (cfg.ringCount === 0) return;
+        if (cfg.ring_count === 0) return;
 
         const cx = 26, cy = 26;
 
-        for (let r = 0; r < cfg.ringCount; r++) {
-            const phase = this._pulsePhase - r * (Math.PI * 0.7);
+        for (let r = 0; r < cfg.ring_count; r++) {
+            const phase = this.pulse_phase - r * (Math.PI * 0.7);
             const expand = (Math.sin(phase) + 1) / 2;
-            const baseR = 14 + r * 5;
-            const radius = baseR + expand * 8;
+            const base_r = 14 + r * 5;
+            const radius = base_r + expand * 8;
             const alpha = (1 - expand) * (0.5 - r * 0.08);
             if (alpha <= 0) continue;
 
@@ -602,7 +599,7 @@ class Suspicion {
             ctx.restore();
         }
 
-        if (cfg.ringCount >= 4) {
+        if (cfg.ring_count >= 4) {
             const flicker = Math.random() > 0.6 ? 0.12 : 0;
             if (flicker > 0) {
                 ctx.save();
@@ -617,31 +614,31 @@ class Suspicion {
         }
     }
 
-    _drawBackground(dt, cfg) {
-        const ctx = this._ctx;
+    draw_background(dt, cfg) {
+        const ctx = this.ctx;
         if (!ctx) return;
-        const w = this._canvas.width;
-        const h = this._canvas.height;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
         ctx.clearRect(0, 0, w, h);
-        const t = this.animTime;
+        const t = this.anim_time;
 
         ctx.save();
         ctx.strokeStyle = cfg.color;
         ctx.globalAlpha = 0.03;
         ctx.lineWidth = 0.5;
-        const hexSize = 12;
-        const hexW = hexSize * Math.sqrt(3);
-        const hexH = hexSize * 2;
-        const scrollX = (t * 12) % (hexW * 2);
-        for (let col = -2; col < Math.ceil(w / hexW) + 2; col++) {
-            for (let row = -1; row < Math.ceil(h / (hexH * 0.75)) + 1; row++) {
-                const cx = col * hexW - scrollX + (row % 2) * (hexW / 2);
-                const cy = row * hexH * 0.75;
+        const hex_size = 12;
+        const hex_w = hex_size * Math.sqrt(3);
+        const hex_h = hex_size * 2;
+        const scroll_x = (t * 12) % (hex_w * 2);
+        for (let col = -2; col < Math.ceil(w / hex_w) + 2; col++) {
+            for (let row = -1; row < Math.ceil(h / (hex_h * 0.75)) + 1; row++) {
+                const cx = col * hex_w - scroll_x + (row % 2) * (hex_w / 2);
+                const cy = row * hex_h * 0.75;
                 ctx.beginPath();
                 for (let j = 0; j < 6; j++) {
                     const angle = (Math.PI / 3) * j - Math.PI / 6;
-                    const px = cx + hexSize * Math.cos(angle);
-                    const py = cy + hexSize * Math.sin(angle);
+                    const px = cx + hex_size * Math.cos(angle);
+                    const py = cy + hex_size * Math.sin(angle);
                     j === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
                 }
                 ctx.closePath();
@@ -650,7 +647,7 @@ class Suspicion {
         }
         ctx.restore();
 
-        for (const p of this._particles) {
+        for (const p of this.particles) {
             p.x -= p.speed * dt * 0.4;
             if (p.x < -0.02) p.x = 1.02;
             const flicker = 0.6 + 0.4 * Math.sin(t * 1.5 + p.phase);
@@ -663,18 +660,18 @@ class Suspicion {
             ctx.restore();
         }
 
-        const scanX = (this._scanOffset * (w + 60)) - 30;
+        const scan_x = (this.scan_offset * (w + 60)) - 30;
         ctx.save();
-        const scanGrad = ctx.createLinearGradient(scanX - 6, 0, scanX + 6, 0);
-        scanGrad.addColorStop(0, 'transparent');
-        scanGrad.addColorStop(0.5, cfg.color.replace(',1)', ',0.06)'));
-        scanGrad.addColorStop(1, 'transparent');
+        const scan_grad = ctx.createLinearGradient(scan_x - 6, 0, scan_x + 6, 0);
+        scan_grad.addColorStop(0, 'transparent');
+        scan_grad.addColorStop(0.5, cfg.color.replace(',1)', ',0.06)'));
+        scan_grad.addColorStop(1, 'transparent');
         ctx.fillStyle = cfg.color;
         ctx.globalAlpha = 0.04;
-        ctx.fillRect(scanX - 4, 0, 8, h);
+        ctx.fillRect(scan_x - 4, 0, 8, h);
         ctx.restore();
 
-        if (cfg.ringCount >= 4 && Math.random() > 0.88) {
+        if (cfg.ring_count >= 4 && Math.random() > 0.88) {
             ctx.save();
             ctx.globalAlpha = 0.05;
             ctx.fillStyle = '#ff1a1a';
@@ -687,15 +684,15 @@ class Suspicion {
         const saved_titles = this.suspicion_titles;
         const saved_text = this.suspicion_text;
 
-        if (this.animFrame) cancelAnimationFrame(this.animFrame);
+        if (this.anim_frame) cancelAnimationFrame(this.anim_frame);
         const panel = document.getElementById('suspicion_panel');
         if (panel) panel.remove();
 
-        if (this._vignetteEl) this._vignetteEl.remove();
+        if (this.vignette_ele) this.vignette_ele.remove();
         const vin = document.getElementById('susp-vignette');
         if (vin) vin.remove();
 
-        try { window.removeEventListener('resize', () => this._resizeCanvas()); } catch (e) {}
+        try { window.removeEventListener('resize', () => this.resize_canvas()); } catch (e) {}
 
         this._constructor();
 

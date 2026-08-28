@@ -1,11 +1,5 @@
 :root {
-    --color-background: #0f1117;
-    --color-background-secondary: #1a1f2b;
-    --color-border-tertiary: #2d3648;
     --color-text-primary: #f3f4f6;
-    --color-text-secondary: #9ca3af;
-    --color-accent: #4f8cff;
-    --border-radius-lg: 16px;
 }
 
 * {
