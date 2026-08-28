@@ -3,6 +3,7 @@
 ProximityTarget = {}
 
 local custom_zone = {}
+local interactions = {}
 local interaction_loop_active = {}
 local progressing_zone_id = 0
 
@@ -46,7 +47,7 @@ local function draw_text_3d(x, y, z, text, is_selected)
     end
 end
 
-local function interaction_loop(data, interactions, id)
+local function interaction_loop(data, id)
     if interaction_loop_active[id]
     or IsControlPressed(0, KEYCODE_INTERACT)
     or IsControlPressed(0, KEYCODE_UP)
@@ -65,8 +66,8 @@ local function interaction_loop(data, interactions, id)
 
             local interaction_list = {}
             for i, _ in ipairs(data) do
-                if interactions[i] ~= false then
-                    interaction_list[#interaction_list + 1] = interactions[i]
+                if interactions[id][i] ~= false then
+                    interaction_list[#interaction_list + 1] = interactions[id][i]
                 end
             end
 
@@ -322,7 +323,7 @@ function ProximityTarget:addBoxZone(data)
 
     local zone_id = get_next_id()
     custom_zone[zone_id] = true
-    local interactions = {}
+    interactions[zone_id] = {}
 
     local maximum_raycast_length = get_maximum_raycast_length(data.options)
 
@@ -353,23 +354,23 @@ function ProximityTarget:addBoxZone(data)
                         local hit_coords = throw_raycast(nil)
                         if hit_coords ~= nil and #(player_coords - hit_coords) < distance
                             and is_inside_box(hit_coords, coords, size, rotation) then
-                            interactions[i] = {
+                            interactions[zone_id][i] = {
                                 option = option,
                                 text_pos = coords
                             }
                             some_interaction_possible = true
                         else
-                            interactions[i] = false
+                            interactions[zone_id][i] = false
                         end
                     else
-                        interactions[i] = false
+                        interactions[zone_id][i] = false
                     end
                 end
                 if some_interaction_possible then
-                    interaction_loop(data.options, interactions, zone_id)
+                    interaction_loop(data.options, zone_id)
                 end
             else
-                interactions = {}
+                interactions[zone_id] = {}
             end
 
             Wait(500)
@@ -383,7 +384,7 @@ function ProximityTarget:addLocalEntity(entity, data)
 
     local zone_id = get_next_id()
     custom_zone[zone_id] = true
-    local interactions = {}
+    interactions[zone_id] = {}
 
     local maximum_raycast_length = get_maximum_raycast_length(data) + get_maximum_bone_offset(entity, data)
 
@@ -430,23 +431,23 @@ function ProximityTarget:addLocalEntity(entity, data)
                         end
 
                         if valid_interaction then
-                            interactions[i] = {
+                            interactions[zone_id][i] = {
                                 option = option,
                                 text_pos = target_coords
                             }
                             some_interaction_possible = true
                         else
-                            interactions[i] = false
+                            interactions[zone_id][i] = false
                         end
                     else
-                        interactions[i] = false
+                        interactions[zone_id][i] = false
                     end
                 end
                 if some_interaction_possible then
-                    interaction_loop(data, interactions, zone_id)
+                    interaction_loop(data, zone_id)
                 end
             else
-                interactions = {}
+                interactions[zone_id] = {}
             end
 
             Wait(400)
