@@ -78,18 +78,10 @@ function Trigger:on_security_alarm_trigger()
 end
 
 function Trigger:is_raid_disabled()
-    if last_raid_time == nil then
-        return false
-    else
-        return GetGameTimer() - last_raid_time < Config.raid_reentry_cooldown
-    end
+    return not Config.raid_reentry_possible(last_raid_time)
 end
-function Trigger:raid_disabled_for()
-    if Trigger:is_raid_disabled() then
-        return Config.raid_reentry_cooldown + last_raid_time - GetGameTimer()
-    else
-        return 0
-    end
+function Trigger:raid_disabled_message()
+    return Config.raid_reentry_possible_message(last_raid_time)
 end
 
 function Trigger:on_px41_gas_extraction(player, quality)

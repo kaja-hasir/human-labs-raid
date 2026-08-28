@@ -13,9 +13,63 @@ Config.language = 'de' -- Supports: 'de', 'en'
 Config.support_the_creator_telemetry = true
 
 Config.clear_population_every_frame = true -- Remove if all peds are cleared either way to save performance
-Config.raid_reentry_cooldown = 60*60*1000 -- 1 hour cooldown after raid end
-Config.reconnect_location = vec4(2911.7893, 4320.9497, 50.2861, 286.2869) -- Position for reconnecting players; default is where transporters despawn near containers
 Config.general_loading_wait_time_ms = 100 -- Decrease (>30) makes more responsive; Increase (<5000) improves performance
+Config.reconnect_location = vec4(2911.7893, 4320.9497, 50.2861, 286.2869) -- Position for reconnecting players; default is where transporters despawn near containers
+
+Config.raid_reentry_possible = function(last_raid_time) -- Server, Keep in mind without database, a server restart resets this parameter to nil
+    -- -- Example: Possible entry between 18:00-23:00
+    -- local time_now = os.time() + 2*60*60 -- GMT+2 Berlin
+    -- local total_minutes = math.floor((time_now % 86400) / 60)
+    -- local hours = math.floor(total_minutes / 60)
+    -- return hours >= 18 and hours < 23
+
+    -- -- Example: 2 Police online required ESX
+    -- local required_police = 1
+    -- local police_on_duty = #(exports["es_extended"]:getSharedObject().GetExtendedPlayers('job', 'police'))
+    -- return police_on_duty >= required_police
+
+    -- Example: 1 hour cooldown after raid end
+    local reentry_cooldown = 60*1000
+    if last_raid_time == nil then -- No raid yet
+        return true
+    else
+        return GetGameTimer() - last_raid_time > reentry_cooldown
+    end
+end
+Config.raid_reentry_possible_message = function(last_raid_time) -- Server
+    -- -- Example: Possible entry between 18:00-23:00
+    -- if Config.raid_reentry_possible(last_raid_time) then
+    --     return nil
+    -- else
+    --     return string.format(Locale.suspicion.reentry_time_range, "18:00-23:00")
+    -- end
+
+    -- -- Example: 2 Police online required ESX
+    -- if Config.raid_reentry_possible(last_raid_time) then
+    --     return nil
+    -- else
+    --     local required_police = 1
+    --     local police_on_duty = #(exports["es_extended"]:getSharedObject().GetExtendedPlayers('job', 'police'))
+    --     return string.format(Locale.suspicion.reentry_required_police, police_on_duty, required_police)
+    -- end
+
+    -- Example: 1 hour cooldown after raid end
+    local reentry_cooldown = 60*1000
+    if Config.raid_reentry_possible(last_raid_time) then
+        return nil
+    else
+        local raid_possible_time_ms = reentry_cooldown + last_raid_time - GetGameTimer()
+        -- local y, mo, d, h, m, s = GetLocalTime()
+        local time_now = os.time() + 2*60*60 -- GMT+2 Berlin
+        local raid_disabled_for_s = time_now + raid_possible_time_ms / 1000
+
+        local total_minutes = math.floor((raid_disabled_for_s % 86400) / 60)
+        local hours = math.floor(total_minutes / 60)
+        local minutes = total_minutes % 60
+
+        return string.format(Locale.suspicion.reentry_disabled_until, hours, minutes)
+    end
+end
 
 Config.blips = {
     global_blip = true,

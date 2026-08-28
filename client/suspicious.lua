@@ -9,7 +9,7 @@ local spottable = false
 local is_spotted = false
 local is_in_alarm = false
 local is_in_lab = false
-local raid_disabled_for_s = 0
+local raid_disabled_text = nil
 
 local suspicion_text = ""
 local suspicion_timer = 0
@@ -18,11 +18,6 @@ local spotted_progress = {}
 local paused_spotteds = {}
 local alarm_trigger_time = 10000
 
-
-local function get_time()
-    local years, months, days, hours, minutes, seconds = GetLocalTime()
-    return 31557600*years + 2629800*months + 86400*days + 3600*hours + 60*minutes + seconds
-end
 
 local function show_panel()
     if panel_is_shown then return end
@@ -59,12 +54,8 @@ local function update_suspicious_level()
         suspicion_level = 0
     end
 
-    if get_time() < raid_disabled_for_s then
-        local total_minutes = math.floor((raid_disabled_for_s % 86400) / 60)
-        local hours = math.floor(total_minutes / 60)
-        local minutes = total_minutes % 60
-
-        suspicion_text_inner = string.format(Locale.suspicion.disabled_until, hours, minutes)
+    if raid_disabled_text ~= nil then
+        suspicion_text_inner = raid_disabled_text
     end
 
     SendNUIMessage({
@@ -285,8 +276,8 @@ RegisterNetEvent('human_labs_raid:client:suspicious:inform_alarm', function(new_
     update_suspicious_level()
 end)
 
-RegisterNetEvent('human_labs_raid:client:suspicious:inform_raid_disabled', function(time_ms)
-    raid_disabled_for_s = get_time() + time_ms / 1000
+RegisterNetEvent('human_labs_raid:client:suspicious:inform_raid_disabled', function(text)
+    raid_disabled_text = text
     update_suspicious_level()
 end)
 

@@ -50,7 +50,9 @@ if Config.language == 'de' then
         changing_clothes = "Umziehen",
         spotted_by_scientist = "Von Wissenschaftler verdächtigt",
         in_lab = "Labor Sperrgebiet",
-        disabled_until = "Deaktiviert bis %02d:%02d"
+        reentry_disabled_until = "Deaktiviert bis %02d:%02d",
+        reentry_required_police = "Deaktiviert: %d/%d Polizisten",
+        reentry_time_range = "Nur zwischen %s möglich"
     }
     Locale.crafting = {
         extract = "Extrahiere Vorläufer",
@@ -132,7 +134,9 @@ else
         changing_clothes = "Changing clothes",
         spotted_by_scientist = "Chemworker is supicious",
         in_lab = "In restricted laboratory",
-        disabled_until = "Disabled until %02d:%02d"
+        reentry_disabled_until = "Disabled until %02d:%02d",
+        reentry_required_police = "Disabled: %d/%d police",
+        reentry_time_range = "Only between %s possible"
     }
     Locale.crafting = {
         extract = "Extract precursor",

@@ -39,6 +39,7 @@ end
 
 function SetupClient(client)
     TriggerClientEvent('human_labs_raid:client:initiate', client)
+    TriggerClientEvent('human_labs_raid:client:suspicious:inform_raid_disabled', client, Trigger:raid_disabled_message())
 
     if Hostile then
         TriggerClientEvent('human_labs_raid:client:security:set_area_hostile', client)
@@ -47,7 +48,6 @@ function SetupClient(client)
 
     if RaidDisabled then
         TriggerClientEvent('human_labs_raid:client:crafting:change_extraction_possible', client, false)
-        TriggerClientEvent('human_labs_raid:client:suspicious:inform_raid_disabled', client, Trigger:raid_disabled_for())
     else
         TriggerClientEvent('human_labs_raid:client:crafting:change_extraction_possible', client, true)
         ScubaGearTakenClient(client)
@@ -121,7 +121,7 @@ AddEventHandler('onResourceStart', function(resourceName)
         if RaidDisabled then
             spawn_barricates_when_ready()
 
-            Wait(Trigger:raid_disabled_for() + 5000)
+            while Trigger:is_raid_disabled() do Wait(5000) end
             RaidDisabled = Trigger:is_raid_disabled()
             RunForPlayersInside(function(src)
                 CleanupClient(src)
