@@ -193,7 +193,8 @@ local function setup_panel()
                 Locale.suspicion.suspicion_title_4
             },
             vignetta_effect = Config.suspicion_panel.vignette_effect,
-            position = Config.suspicion_panel.position
+            position = Config.suspicion_panel.position,
+            theme = Config.suspicion_panel.theme
         }
     })
 end

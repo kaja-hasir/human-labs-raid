@@ -53,16 +53,6 @@ Config.outfits = {
         components = { [1] = { texture = 0, drawable = 0, palette = 0 }, [3] = { texture = 0, drawable = 4, palette = 0 }, [4] = { texture = 8, drawable = 97, palette = 0 }, [5] = { texture = 0, drawable = 0, palette = 0 }, [6] = { texture = 0, drawable = 70, palette = 0 }, [7] = { texture = 0, drawable = 0, palette = 0 }, [8] = { texture = 0, drawable = 15, palette = 0 }, [9] = { texture = 0, drawable = 0, palette = 0 }, [10] = { texture = 0, drawable = 0, palette = 0 }, [11] = { texture = 0, drawable = 342, palette = 0 } }, props = { [0] = { texture = -1, drawable = -1 }, [1] = { texture = -1, drawable = -1 }, [2] = { texture = -1, drawable = -1 }, [6] = { texture = -1, drawable = -1 }, [7] = { texture = -1, drawable = -1 } }
     }
 }
-Config.suspicion_panel = {
-    vignette_effect = true,
-    position = {
-        left = "0.0px", -- css
-        top = "0.0px", -- css
-        scale = 1.0, -- test on multiple screens after changing
-        justify_h = "center", -- left, center, right
-        justify_v = "top", -- top, center, bottom
-    }
-}
 Config.zones = {
     global_zone_coords = vec3(3526.6445, 3721.6362, 36.6426),
     global_zone_radius = 400.0,
@@ -156,6 +146,64 @@ Config.framework = {
             box = function(data) end, -- Client only
             sphere = function(data) end, -- Client only
             remove_zone = function(zone) end -- Client only
+        }
+    }
+}
+
+
+----------- Suspicion -----------
+Config.suspicion_panel = {
+    vignette_effect = true,
+    position = {
+        left = "0.0px", -- css
+        top = "0.0px", -- css
+        scale = 1.0, -- test on multiple screens after changing
+        justify_h = "center", -- left, center, right
+        justify_v = "top", -- top, center, bottom
+    },
+    theme = {
+        -- For each level you can add and modify the following properties:
+        --   color = 'rgba(138,184,160,1)',
+        --   color_dim = 'rgba(58,90,72,1)',
+        --   color_glow = 'rgba(138,184,160,0.12)',
+        --   bg_color = 'rgba(4,12,8,0.78)',
+        --   border_color = 'rgba(138,184,160,0.28)',
+        --   icon = '◈',
+        --   bar_count = 0,
+        --   scan_speed = 0.12,
+        --   ring_count = 0,
+        --   pulse_speed = 0,
+        --   icon_scale = 1.0,
+        --   blink_rate = 0,
+        --   rotate_icon = false,
+        --   shake_icon = false,
+        levels = { -- Golden Theme
+            [0] = { -- Undetected
+                -- color = 'rgba(207,168,73,1)',
+            },
+            [1] = { -- Restricted Area
+            },
+            [2] = { -- Suspicious Activity
+            },
+            [3] = { -- Spotted
+            },
+            [4] = { -- Alarm
+            }
+        },
+        background = {
+            shape = 'hexagon', -- hexagon, triangle, square, dots, lines, none
+            size = 12,
+            opacity = 0.03,
+            scroll_speed = 8,
+            line_width = 0.5
+        },
+        particles = {
+            enabled = true,
+            count = 10,
+            size_min = 0.8,
+            size_max = 1.8,
+            opacity_min = 0.08,
+            opacity_max = 0.2
         }
     }
 }

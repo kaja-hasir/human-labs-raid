@@ -29,6 +29,25 @@ class Suspicion {
         this.suspicion_amount = 0;
         this.suspicion_titles = ['Undetected', 'Restricted Area', 'Suspicious Activity', 'Spotted', 'Alarmed'];
         this.suspicion_text = '';
+
+        this.theme_levels = null;
+        this.theme_background = {
+            shape: 'hexagon',
+            size: 12,
+            opacity: 0.03,
+            scroll_speed: 12,
+            line_width: 0.5,
+        };
+        this.theme_particles = {
+            enabled: true,
+            count: 10,
+            size_min: 0.8,
+            size_max: 2.0,
+            speed_min: 0.008,
+            speed_max: 0.024,
+            opacity_min: 0.08,
+            opacity_max: 0.26,
+        };
     }
 
     init(data) {
@@ -40,6 +59,17 @@ class Suspicion {
             this.position_scale = data.position.scale ?? this.position_scale;
             this.position_justify_h = data.position.justify_h ?? this.position_justify_h;
             this.position_justify_v = data.position.justify_v ?? this.position_justify_v;
+        }
+        if (data.theme) {
+            if (data.theme.levels) {
+                this.theme_levels = data.theme.levels;
+            }
+            if (data.theme.background) {
+                this.theme_background = { ...this.theme_background, ...data.theme.background };
+            }
+            if (data.theme.particles) {
+                this.theme_particles = { ...this.theme_particles, ...data.theme.particles };
+            }
         }
     }
 
@@ -62,6 +92,7 @@ class Suspicion {
     }
 
     level_config(level) {
+        const idx = Math.max(0, Math.min(4, level));
         const configs = [
             {
                 label: 'Undetected',
@@ -149,18 +180,24 @@ class Suspicion {
                 shake_icon: false,
             },
         ];
-        return configs[Math.max(0, Math.min(4, level))];
+
+        const base = configs[idx];
+        const override = this.theme_levels ? this.theme_levels[idx] : null;
+        return override ? { ...base, ...override } : base;
     }
 
     create_particles() {
+        const cfg = this.theme_particles;
         const pts = [];
-        for (let i = 0; i < 10; i++) {
+        if (!cfg.enabled) return pts;
+
+        for (let i = 0; i < cfg.count; i++) {
             pts.push({
                 x: Math.random(),
                 y: Math.random(),
-                speed: 0.008 + Math.random() * 0.016,
-                size: 0.8 + Math.random() * 1.2,
-                opacity: 0.08 + Math.random() * 0.18,
+                speed: cfg.speed_min + Math.random() * (cfg.speed_max - cfg.speed_min),
+                size: cfg.size_min + Math.random() * (cfg.size_max - cfg.size_min),
+                opacity: cfg.opacity_min + Math.random() * (cfg.opacity_max - cfg.opacity_min),
                 phase: Math.random() * Math.PI * 2,
             });
         }
@@ -324,7 +361,7 @@ class Suspicion {
 
         const foot_corner_left = document.createElement('div');
         foot_corner_left.className = 'susp-foot-corner susp-foot-corner-l';
-        foot_corner_left.style.border_color = cfg.border_color;
+        foot_corner_left.style.borderColor = cfg.border_color;
 
         const foot_line_left = document.createElement('div');
         foot_line_left.className = 'susp-foot-line';
@@ -336,7 +373,7 @@ class Suspicion {
 
         const foot_corner_right = document.createElement('div');
         foot_corner_right.className = 'susp-foot-corner susp-foot-corner-r';
-        foot_corner_right.style.border_color = cfg.border_color;
+        foot_corner_right.style.borderColor = cfg.border_color;
 
         tab_foot.appendChild(foot_corner_left);
         tab_foot.appendChild(foot_line_left);
@@ -446,7 +483,7 @@ class Suspicion {
         });
 
         document.querySelectorAll('.susp-foot-corner').forEach(el => {
-            el.style.border_color = cfg.border_color;
+            el.style.borderColor = cfg.border_color;
         });
         document.querySelectorAll('.susp-foot-line').forEach(el => {
             el.style.background = cfg.border_color;
@@ -476,7 +513,7 @@ class Suspicion {
             fill.style.width = `${(pct * 100).toFixed(1)}%`;
             fill.style.background = cfg.color;
             fill.style.boxShadow = `0 0 6px ${cfg.color}`;
-            bar.style.border_color = cfg.color_dim;
+            bar.style.borderColor = cfg.color_dim;
         }
     }
 
@@ -614,22 +651,41 @@ class Suspicion {
         }
     }
 
-    draw_background(dt, cfg) {
-        const ctx = this.ctx;
-        if (!ctx) return;
-        const w = this.canvas.width;
-        const h = this.canvas.height;
-        ctx.clearRect(0, 0, w, h);
-        const t = this.anim_time;
+    draw_pattern(ctx, w, h, t, cfg) {
+        const bg = this.theme_background;
+        if (bg.shape === 'none') return;
+
+        switch (bg.shape) {
+            case 'triangle':
+                this.draw_pattern_triangle(ctx, w, h, t, cfg);
+                break;
+            case 'square':
+                this.draw_pattern_square(ctx, w, h, t, cfg);
+                break;
+            case 'dots':
+                this.draw_pattern_dots(ctx, w, h, t, cfg);
+                break;
+            case 'lines':
+                this.draw_pattern_lines(ctx, w, h, t, cfg);
+                break;
+            case 'hexagon':
+            default:
+                this.draw_pattern_hexagon(ctx, w, h, t, cfg);
+                break;
+        }
+    }
+
+    draw_pattern_hexagon(ctx, w, h, t, cfg) {
+        const bg = this.theme_background;
+        const hex_size = bg.size;
+        const hex_w = hex_size * Math.sqrt(3);
+        const hex_h = hex_size * 2;
+        const scroll_x = (t * bg.scroll_speed) % (hex_w * 2);
 
         ctx.save();
         ctx.strokeStyle = cfg.color;
-        ctx.globalAlpha = 0.03;
-        ctx.lineWidth = 0.5;
-        const hex_size = 12;
-        const hex_w = hex_size * Math.sqrt(3);
-        const hex_h = hex_size * 2;
-        const scroll_x = (t * 12) % (hex_w * 2);
+        ctx.globalAlpha = bg.opacity;
+        ctx.lineWidth = bg.line_width;
         for (let col = -2; col < Math.ceil(w / hex_w) + 2; col++) {
             for (let row = -1; row < Math.ceil(h / (hex_h * 0.75)) + 1; row++) {
                 const cx = col * hex_w - scroll_x + (row % 2) * (hex_w / 2);
@@ -646,6 +702,122 @@ class Suspicion {
             }
         }
         ctx.restore();
+    }
+
+    draw_pattern_triangle(ctx, w, h, t, cfg) {
+        const bg = this.theme_background;
+        const size = bg.size;
+        const tri_h = size * (Math.sqrt(3) / 2);
+        const scroll_x = (t * bg.scroll_speed) % size;
+
+        ctx.save();
+        ctx.strokeStyle = cfg.color;
+        ctx.globalAlpha = bg.opacity;
+        ctx.lineWidth = bg.line_width;
+
+        const half = size / 2;
+        const cols = Math.ceil(w / half) + 3;
+        const rows = Math.ceil(h / tri_h) + 2;
+
+        for (let row = -1; row < rows; row++) {
+            const y0 = row * tri_h;
+            const y1 = y0 + tri_h;
+            for (let col = -2; col < cols; col++) {
+                const x = col * half - scroll_x;
+                if (col % 2 === 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, y1);
+                    ctx.lineTo(x + half, y0);
+                    ctx.lineTo(x + size, y1);
+                    ctx.closePath();
+                    ctx.stroke();
+                } else {
+                    ctx.beginPath();
+                    ctx.moveTo(x, y0);
+                    ctx.lineTo(x + size, y0);
+                    ctx.lineTo(x + half, y1);
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+            }
+        }
+        ctx.restore();
+    }
+
+    draw_pattern_square(ctx, w, h, t, cfg) {
+        const bg = this.theme_background;
+        const size = bg.size;
+        const scroll_x = (t * bg.scroll_speed) % size;
+
+        ctx.save();
+        ctx.strokeStyle = cfg.color;
+        ctx.globalAlpha = bg.opacity;
+        ctx.lineWidth = bg.line_width;
+        for (let col = -2; col < Math.ceil(w / size) + 2; col++) {
+            const x = col * size - scroll_x;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, h);
+            ctx.stroke();
+        }
+        for (let row = -1; row < Math.ceil(h / size) + 1; row++) {
+            const y = row * size;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(w, y);
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    draw_pattern_dots(ctx, w, h, t, cfg) {
+        const bg = this.theme_background;
+        const size = bg.size;
+        const scroll_x = (t * bg.scroll_speed) % size;
+
+        ctx.save();
+        ctx.fillStyle = cfg.color;
+        ctx.globalAlpha = bg.opacity * 3;
+        for (let col = -2; col < Math.ceil(w / size) + 2; col++) {
+            for (let row = -1; row < Math.ceil(h / size) + 1; row++) {
+                const x = col * size - scroll_x + (row % 2) * (size / 2);
+                const y = row * size;
+                ctx.beginPath();
+                ctx.arc(x, y, Math.max(0.6, bg.line_width), 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        ctx.restore();
+    }
+
+    draw_pattern_lines(ctx, w, h, t, cfg) {
+        const bg = this.theme_background;
+        const size = bg.size;
+        const scroll_x = (t * bg.scroll_speed) % (size * 2);
+
+        ctx.save();
+        ctx.strokeStyle = cfg.color;
+        ctx.globalAlpha = bg.opacity;
+        ctx.lineWidth = bg.line_width;
+        for (let col = -2; col < Math.ceil((w + h) / size) + 2; col++) {
+            const x = col * size * 2 - scroll_x;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x - h, h);
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    draw_background(dt, cfg) {
+        const ctx = this.ctx;
+        if (!ctx) return;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        const t = this.anim_time;
+
+        this.draw_pattern(ctx, w, h, t, cfg);
 
         for (const p of this.particles) {
             p.x -= p.speed * dt * 0.4;
@@ -683,6 +855,9 @@ class Suspicion {
     reset() {
         const saved_titles = this.suspicion_titles;
         const saved_text = this.suspicion_text;
+        const saved_theme_levels = this.theme_levels;
+        const saved_theme_background = this.theme_background;
+        const saved_theme_particles = this.theme_particles;
 
         if (this.anim_frame) cancelAnimationFrame(this.anim_frame);
         const panel = document.getElementById('suspicion_panel');
@@ -698,6 +873,9 @@ class Suspicion {
 
         if (saved_titles) this.suspicion_titles = saved_titles;
         if (saved_text) this.suspicion_text = saved_text;
+        this.theme_levels = saved_theme_levels;
+        this.theme_background = saved_theme_background;
+        this.theme_particles = saved_theme_particles;
 
         this.panel_active = false;
     }
@@ -718,8 +896,21 @@ class Suspicion {
 //         left: "0.0px",
 //         top: "0.0px",
 //         scale: 1.0,
-//         justify_h: "left",
-//         justify_v: "bottom"
-//     }
+//         justify_h: "center",
+//         justify_v: "top"
+//     },
+//     // theme: {
+//     //     levels: {
+//     //         0: { color: 'rgba(80,200,255,1)', icon: '●' },
+//     //         4: { icon: '🔥', color: 'rgba(255,90,0,1)', rotate_icon: false, shake_icon: true },
+//     //     },
+//     //     background: {
+//     //         shape: 'triangle',   // 'hexagon' | 'triangle' | 'square' | 'dots' | 'lines' | 'none'
+//     //         size: 16,
+//     //         opacity: 0.05,
+//     //         scroll_speed: 20,
+//     //     },
+//     //     particles: { enabled: true, count: 16, size_min: 1, size_max: 3 },
+//     // }
 // })
 // suspicion_dev.show_panel();
