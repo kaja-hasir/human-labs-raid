@@ -351,7 +351,7 @@ function ProximityTarget:addBoxZone(data)
 
                     if type(canInteract) ~= "function" or canInteract() then
                         local hit_coords = throw_raycast(nil)
-                        if #(player_coords - hit_coords) < distance
+                        if hit_coords ~= nil and #(player_coords - hit_coords) < distance
                             and is_inside_box(hit_coords, coords, size, rotation) then
                             interactions[i] = {
                                 option = option,
@@ -366,7 +366,7 @@ function ProximityTarget:addBoxZone(data)
                     end
                 end
                 if some_interaction_possible then
-                    interaction_loop(data, interactions, zone_id)
+                    interaction_loop(data.options, interactions, zone_id)
                 end
             else
                 interactions = {}
